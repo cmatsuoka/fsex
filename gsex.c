@@ -39,7 +39,8 @@ uint8 *map_jgl_file(char *filename, int *num)
 void usage()
 {
 	printf("Usage: gsex [-a ccc:ppp] [-h | -l | -s nnn] <filename>\n");
-	printf("    -a ccc:ppp	Alsa MIDI client:port\n"); 
+	printf("    -a ccc:ppp	alsa MIDI client:port\n"); 
+	//printf("    -D		detect synth model\n");
 	printf("    -h		show short description and exit\n");
 	printf("    -l		list patches in librarian file\n");
 	printf("    -s nnn	send temporary patch to Juno-G\n");
