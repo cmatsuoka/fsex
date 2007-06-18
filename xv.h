@@ -206,6 +206,6 @@ extern char *fantomx_wave[];
 extern char *fantoms_wave[];
 extern char *junog_wave[];
 
-int checksum	(uint8 *);
+int checksum	(int, uint8 *);
 
 #endif
