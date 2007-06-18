@@ -60,11 +60,13 @@ int main(int argc, char **argv)
 	}
 	jgl += 160;
 
+	printf("Checking jgl file... ");
 	num = check_jgl(jgl);
 	if (num < 0) {
 		fprintf(stderr, "data seems to be corrputed\n");
 		exit(1);
 	}
+	printf("ok\n");
 
 	if (opt_list) {
 		list_patches(jgl, num);

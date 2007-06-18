@@ -14,7 +14,7 @@ gsex: $(OBJS) gsex.o
 	$(LD) -o$@ $(LDFLAGS) $+ $(LIBS)
 
 clean:
-	rm -f core *.o *~ depend
+	rm -f core *.o *~ depend gsex
 
 depend:
 	@echo Building dependencies...

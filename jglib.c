@@ -5,11 +5,10 @@
 #include "xv.h"
 #include "jglib.h"
 
-#define DATA_SIZE(x) (((x)>0x7f)?(0x80+((x)&0xff)):(x))
 
 #define CHECK_SIZE(x,y) do {\
 	if ((x) != DATA_SIZE((y))) { \
-		printf("data block has size %d (expected %d)\n", \
+		fprintf(stderr, "data block has size %d (expected %d)\n", \
 			(x), DATA_SIZE((y))); \
 		return -1; \
 	} } while (0)
@@ -19,8 +18,6 @@ int check_jgl(uint8 *jgl)
 	uint8 *patch;
 	int i, count, size, map_size;
 
-	printf("Checking jgl file...\n");
-
 	for (count = 0; ; count++) {
 		size = val32_be(jgl);
 		jgl += 4;
@@ -29,33 +26,33 @@ int check_jgl(uint8 *jgl)
 
 		/* Patch Common */
 		map_size = val32_be(patch);
-		if (map_size != PATCH_COMMON_SIZE) break;
+		if (map_size != PATCH_COMMON_SIZE_JG) break;
 		patch += 4 + map_size;
 
 		/* Patch Common MFX */
 		map_size = val32_be(patch);
-		CHECK_SIZE(map_size, PATCH_COMMON_MFX_SIZE);
+		CHECK_SIZE(map_size, PATCH_COMMON_MFX_SIZE_JG);
 		patch += 4 + map_size;
 
 		/* Patch Common Chorus */
 		map_size = val32_be(patch);
-		CHECK_SIZE(map_size, PATCH_COMMON_CHORUS_SIZE);
+		CHECK_SIZE(map_size, PATCH_COMMON_CHORUS_SIZE_JG);
 		patch += 4 + map_size;
 
 		/* Patch Common Reverb */
 		map_size = val32_be(patch);
-		CHECK_SIZE(map_size, PATCH_COMMON_REVERB_SIZE);
+		CHECK_SIZE(map_size, PATCH_COMMON_REVERB_SIZE_JG);
 		patch += 4 + map_size;
 		
 		/* Patch TMT */
 		map_size = val32_be(patch);
-		CHECK_SIZE(map_size, PATCH_TMT_SIZE);
+		CHECK_SIZE(map_size, PATCH_TMT_SIZE_JG);
 		patch += 4 + map_size;
 
 		/* Patch Tone */
 		for (i = 0; i < 4; i++) {
 			map_size = val32_be(patch);
-			CHECK_SIZE(map_size, PATCH_TONE_SIZE);
+			CHECK_SIZE(map_size, PATCH_TONE_SIZE_JG);
 			patch += 4 + map_size;
 		}
 	}
