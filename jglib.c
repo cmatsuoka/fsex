@@ -80,7 +80,7 @@ void list_patches(uint8 *jgl, int num)
 		len = val32_be(patch);
 		patch += 4;
 
-		printf(" %04d  %s  %-12.12s  %s  ",
+		printf("%04d  %s  %-12.12s  %s  ",
 			count + 1,
 			patch_category[patch[PATCH_CATEGORY]].short_name,
 			&patch[PATCH_NAME_1],
@@ -107,7 +107,7 @@ void list_patches(uint8 *jgl, int num)
 		len = val32_be(patch);
 		patch += 4;
 
-		printf("%c%c%c%c",
+		printf("%c%c%c%c ",
 			patch[TMT1_TONE_SWITCH] ? '1' : '-',
 			patch[TMT2_TONE_SWITCH] ? '2' : '-',
 			patch[TMT3_TONE_SWITCH] ? '3' : '-',
@@ -125,16 +125,16 @@ void list_patches(uint8 *jgl, int num)
 			switch (patch[WAVE_GROUP_TYPE]) {
 			case 0:
 				n = val32_lsn(&patch[WAVE_NUMBER_L]);
-				printf("  %-9.9s", junog_wave[n]);
+				printf(" %-10.10s", junog_wave[n]);
 				break;
 			case 1:
-				printf("  %-9.9s", "SRX");
+				printf(" %-10.10s", "SRX");
 				break;
 			case 2:
-				printf("  %-9.9s", "sample");
+				printf(" %-10.10s", "sample");
 				break;
 			default:
-				printf("  %-9.9s", "invalid");
+				printf(" %-10.10s", "invalid");
 			}
 
 			patch += len;
