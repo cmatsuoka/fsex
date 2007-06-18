@@ -202,8 +202,8 @@ struct xv_patch_category {
 
 extern struct xv_patch_category patch_category[];
 extern char *xv5080_wave[];
+extern char *fantom_wave[];
 extern char *fantomx_wave[];
-extern char *fantoms_wave[];
 extern char *junog_wave[];
 
 int checksum	(int, uint8 *);
