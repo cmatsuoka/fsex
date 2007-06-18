@@ -7,6 +7,11 @@
 #include "common.h"
 #include "xv.h"
 
+
+#define DATA_SIZE(x) (((x)>0x7f)?(0x80+((x)&0xff)):(x))
+#define CHECK_SIZE(x,y) if ((x) != DATA_SIZE(y)) { \
+	printf("Data size mismatch (%d, should be %d)\n", (x), (y)); break; }
+
 void list_patches(uint8 *jgl)
 {
 	uint8 *patch;
@@ -19,16 +24,50 @@ void list_patches(uint8 *jgl)
 		patch = jgl;
 		jgl += size;
 
+		/* Patch Common */
 		map_size = val32_be(patch);
 		patch += 4;
 
-		if (map_size != PATCH_COMMON_SIZE)
+		if (map_size != DATA_SIZE(PATCH_COMMON_SIZE))
 			break;
 
-		printf(" %04d  %-3.3s  %-12.12s\n",
+		printf(" %04d  %-3.3s  %-12.12s  %s  ",
 			++count,
 			patch_category[patch[PATCH_CATEGORY]].short_name,
-			&patch[PATCH_NAME_1]);
+			&patch[PATCH_NAME_1],
+			patch[MONO_POLY] ? "----" : "mono");
+
+		patch += map_size;
+
+		/* Patch Common MFX */
+		map_size = val32_be(patch);
+		patch += 4;
+		CHECK_SIZE(map_size, PATCH_COMMON_MFX_SIZE);
+		patch += map_size;
+
+		/* Patch Common Chorus */
+		map_size = val32_be(patch);
+		patch += 4;
+		CHECK_SIZE(map_size, PATCH_COMMON_CHORUS_SIZE);
+		patch += map_size;
+
+		/* Patch Common Reverb */
+		map_size = val32_be(patch);
+		patch += 4;
+		CHECK_SIZE(map_size, PATCH_COMMON_REVERB_SIZE);
+		patch += map_size;
+		
+		/* Patch TMT */
+		map_size = val32_be(patch);
+		patch += 4;
+		CHECK_SIZE(map_size, PATCH_TMT_SIZE);
+		patch += map_size;
+
+		printf("%c%c%c%c\n",
+			patch[TMT1_TONE_SWITCH] ? '1' : '-',
+			patch[TMT2_TONE_SWITCH] ? '2' : '-',
+			patch[TMT3_TONE_SWITCH] ? '3' : '-',
+			patch[TMT4_TONE_SWITCH] ? '4' : '-');
 	}
 }
 
