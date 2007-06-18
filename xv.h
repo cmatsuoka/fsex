@@ -207,5 +207,6 @@ extern char *fantoms_wave[];
 extern char *junog_wave[];
 
 int checksum	(int, uint8 *);
+int send_sysex	(int, uint8 *);
 
 #endif

@@ -12,5 +12,4 @@ void midi_ctl		(int, int, int);
 void midi_bend		(int, int);
 void midi_sysex		(int, void *);
 
-
 #endif
