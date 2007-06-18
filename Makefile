@@ -8,9 +8,9 @@ LIBS	=
 .c.o:
 	$(CC) -c $(CFLAGS) -o $*.o $<
 
-all: jglib
+all: gsex
 
-jglib: $(OBJS)
+gsex: $(OBJS) gsex.o
 	$(LD) -o$@ $(LDFLAGS) $+ $(LIBS)
 
 clean:
@@ -18,6 +18,6 @@ clean:
 
 depend:
 	@echo Building dependencies...
-	@$(CC) $(CFLAGS) -M $(OBJS:.o=.c) >$@
+	@$(CC) $(CFLAGS) -M $(OBJS:.o=.c) gsex.c >$@
 
 include depend
