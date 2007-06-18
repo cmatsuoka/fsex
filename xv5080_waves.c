@@ -1,5 +1,6 @@
 
 char *xv5080_wave[] = {
+	"(unset)"
 	"StGrand pA L",
 	"StGrand pA R",
 	"StGrand pB L",
