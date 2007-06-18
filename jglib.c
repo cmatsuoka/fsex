@@ -65,6 +65,11 @@ void list_patches(uint8 *jgl, int num)
 	uint8 *patch;
 	int i, count, size, len;
 
+	printf("Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 "
+			"Waveform 3 Waveform 4\n");
+	printf("----- ---- ------------- -- ----- ---------- ---------- "
+			"---------- ----------\n");
+
 	for (count = 0; count < num; count++) {
 		size = val32_be(jgl);
 		jgl += 4;
@@ -75,11 +80,11 @@ void list_patches(uint8 *jgl, int num)
 		len = val32_be(patch);
 		patch += 4;
 
-		printf(" %04d  %-3.3s  %-12.12s  %s  ",
+		printf(" %04d  %s  %-12.12s  %s  ",
 			count + 1,
 			patch_category[patch[PATCH_CATEGORY]].short_name,
 			&patch[PATCH_NAME_1],
-			patch[MONO_POLY] ? "----" : "mono");
+			patch[MONO_POLY] ? "P" : "m");
 
 		patch += len;
 
@@ -120,16 +125,16 @@ void list_patches(uint8 *jgl, int num)
 			switch (patch[WAVE_GROUP_TYPE]) {
 			case 0:
 				n = val32_lsn(&patch[WAVE_NUMBER_L]);
-				printf("  %-8.8s", junog_wave[n]);
+				printf("  %-9.9s", junog_wave[n]);
 				break;
 			case 1:
-				printf("  %-8.8s", "SRX");
+				printf("  %-9.9s", "SRX");
 				break;
 			case 2:
-				printf("  %-8.8s", "sample");
+				printf("  %-9.9s", "sample");
 				break;
 			default:
-				printf("  %-8.8s", "invalid");
+				printf("  %-9.9s", "invalid");
 			}
 
 			patch += len;

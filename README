@@ -1,0 +1,7 @@
+
+gsex (from Juno-G SysEx) is a small program to send patches to the Roland
+Juno-G, written to avoid rebooting to Windows every time I want to upload
+patches from a .jgl file to the synthesizer. It is currently Juno-G specific,
+but should work with little changes with other Roland devices using the XV
+engine such as the XV-5080 or Fantom.
+
