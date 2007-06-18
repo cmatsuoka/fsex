@@ -107,5 +107,36 @@ enum xv_patch_common {
 	PATCH_COMMON_SIZE	= 0x004f,
 };
 
-extern char *patch_category[];
+/* Patch Common MFX */
+enum xv_patch_common_mfx {
+	PATCH_COMMON_MFX_SIZE	= 0x0111,
+};
+
+/* Patch Common Chorus */
+enum xv_patch_common_chorus {
+	PATCH_COMMON_CHORUS_SIZE = 0x0054,
+};
+
+/* Patch Common Reverb */
+enum xv_patch_common_reverb {
+	PATCH_COMMON_REVERB_SIZE = 0x0053,
+};
+
+/* Patch TMT */
+enum xv_patch_tmt {
+	PATCH_TMT_SIZE		= 0x0029,
+};
+
+/* Patch Tone */
+enum xv_patch_tone {
+	PATCH_TONE_SIZE		= 0x011a,
+};
+
+struct xv_patch_category {
+	char *short_name;
+	char *long_name;
+};
+
+extern struct xv_patch_category patch_category[];
+
 #endif
