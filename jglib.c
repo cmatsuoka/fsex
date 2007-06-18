@@ -12,6 +12,7 @@
 #define CHECK_SIZE(x,y) if ((x) != DATA_SIZE(y)) { \
 	printf("Data size mismatch (%d, should be %d)\n", (x), (y)); break; }
 
+
 void list_patches(uint8 *jgl)
 {
 	uint8 *patch;
@@ -71,29 +72,93 @@ void list_patches(uint8 *jgl)
 	}
 }
 
+void send_patch(uint8 *jgl, int num)
+{
+	uint8 *patch;
+	int i, count = 0;
+	int size, map_size;
+
+	while (++count < num) {
+		size = val32_be(jgl);
+		jgl += 4 + size;
+	}
+
+	size = val32_be(jgl);
+	patch = jgl + 4;
+
+	/* Patch Common */
+	map_size = val32_be(patch);
+	patch += 4;
+	printf("Patch %04d: %-12.12s\n", num, &patch[PATCH_NAME_1]);
+	printf("Sending patch common data...\n");
+
+	patch += map_size;
+
+	/* Patch Common MFX */
+	map_size = val32_be(patch);
+	patch += 4;
+	printf("Sending patch MFX data...\n");
+
+	patch += map_size;
+
+	/* Patch Common Chorus */
+	map_size = val32_be(patch);
+	patch += 4;
+	printf("Sending patch chorus data...\n");
+
+	patch += map_size;
+
+	/* Patch Common Reverb */
+	map_size = val32_be(patch);
+	patch += 4;
+	printf("Sending patch reverb data...\n");
+
+	patch += map_size;
+	
+	/* Patch TMT */
+	map_size = val32_be(patch);
+	patch += 4;
+	printf("Sending patch TMT data...\n");
+
+	patch += map_size;
+
+	/* Patch Tone */
+	for (i = 0; i < 4; i++) {
+		map_size = val32_be(patch);
+		patch += 4;
+		printf("Sending patch tone %d data...\n", i + 1);
+
+		patch += map_size;
+	}
+}
+
 void usage()
 {
-	printf("Usage: jglib [-h] [-l] <filename>\n");
+	printf("Usage: jglib [-h | -l | -s nnn] <filename>\n");
 	printf("    -h		show short description and exit\n");
 	printf("    -l		list patches in librarian file\n");
+	printf("    -s nnn	send temporary patch to Juno-G\n");
 }
 
 int main(int argc, char **argv)
 {
 	uint8 *jgl;
-	int o, opt_list;
+	int o, opt_list, opt_send;
 	char *filename;
 
-	opt_list = 0;
+	opt_list = opt_send = 0;
 	filename = NULL;
 
-	while ((o = getopt(argc, argv, "lh")) > 0) {
+	while ((o = getopt(argc, argv, "lhs:")) > 0) {
 		switch (o) {
 		case 'h':
 			usage();
 			exit(0);
 		case 'l':
 			opt_list = 1;
+			break;
+		case 's':
+			opt_send = strtoul(optarg, NULL, 0);
 			break;
 		default:
 			exit(1);
@@ -121,6 +186,11 @@ int main(int argc, char **argv)
 
 	if (opt_list) {
 		list_patches(jgl);
+		exit(0);
+	}
+
+	if (opt_send) {
+		send_patch(jgl, opt_send);
 		exit(0);
 	}
 

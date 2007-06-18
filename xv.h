@@ -2,6 +2,7 @@
 #ifndef __XV_MAP_H
 #define __XV_MAP_H
 
+#include "common.h"
 
 #define MODEL_JUNOG		0x000015
 
@@ -179,5 +180,7 @@ struct xv_patch_category {
 };
 
 extern struct xv_patch_category patch_category[];
+
+int checksum	(uint8 *);
 
 #endif
