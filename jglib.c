@@ -16,7 +16,7 @@
 int check_jgl(uint8 *jgl)
 {
 	uint8 *patch;
-	int i, count, size, map_size;
+	int i, count, size, len;
 
 	for (count = 0; ; count++) {
 		size = val32_be(jgl);
@@ -25,35 +25,35 @@ int check_jgl(uint8 *jgl)
 		jgl += size;
 
 		/* Patch Common */
-		map_size = val32_be(patch);
-		if (map_size != PATCH_COMMON_SIZE_JG) break;
-		patch += 4 + map_size;
+		len = val32_be(patch);
+		if (len != PATCH_COMMON_SIZE_JG) break;
+		patch += 4 + len;
 
 		/* Patch Common MFX */
-		map_size = val32_be(patch);
-		CHECK_SIZE(map_size, PATCH_COMMON_MFX_SIZE_JG);
-		patch += 4 + map_size;
+		len = val32_be(patch);
+		CHECK_SIZE(len, PATCH_COMMON_MFX_SIZE_JG);
+		patch += 4 + len;
 
 		/* Patch Common Chorus */
-		map_size = val32_be(patch);
-		CHECK_SIZE(map_size, PATCH_COMMON_CHORUS_SIZE_JG);
-		patch += 4 + map_size;
+		len = val32_be(patch);
+		CHECK_SIZE(len, PATCH_COMMON_CHORUS_SIZE_JG);
+		patch += 4 + len;
 
 		/* Patch Common Reverb */
-		map_size = val32_be(patch);
-		CHECK_SIZE(map_size, PATCH_COMMON_REVERB_SIZE_JG);
-		patch += 4 + map_size;
+		len = val32_be(patch);
+		CHECK_SIZE(len, PATCH_COMMON_REVERB_SIZE_JG);
+		patch += 4 + len;
 		
 		/* Patch TMT */
-		map_size = val32_be(patch);
-		CHECK_SIZE(map_size, PATCH_TMT_SIZE_JG);
-		patch += 4 + map_size;
+		len = val32_be(patch);
+		CHECK_SIZE(len, PATCH_TMT_SIZE_JG);
+		patch += 4 + len;
 
 		/* Patch Tone */
 		for (i = 0; i < 4; i++) {
-			map_size = val32_be(patch);
-			CHECK_SIZE(map_size, PATCH_TONE_SIZE_JG);
-			patch += 4 + map_size;
+			len = val32_be(patch);
+			CHECK_SIZE(len, PATCH_TONE_SIZE_JG);
+			patch += 4 + len;
 		}
 	}
 
@@ -63,7 +63,7 @@ int check_jgl(uint8 *jgl)
 void list_patches(uint8 *jgl, int num)
 {
 	uint8 *patch;
-	int i, count, size, map_size;
+	int i, count, size, len;
 
 	for (count = 0; count < num; count++) {
 		size = val32_be(jgl);
@@ -72,7 +72,7 @@ void list_patches(uint8 *jgl, int num)
 		jgl += size;
 
 		/* Patch Common */
-		map_size = val32_be(patch);
+		len = val32_be(patch);
 		patch += 4;
 
 		printf(" %04d  %-3.3s  %-12.12s  %s  ",
@@ -81,25 +81,25 @@ void list_patches(uint8 *jgl, int num)
 			&patch[PATCH_NAME_1],
 			patch[MONO_POLY] ? "----" : "mono");
 
-		patch += map_size;
+		patch += len;
 
 		/* Patch Common MFX */
-		map_size = val32_be(patch);
+		len = val32_be(patch);
 		patch += 4;
-		patch += map_size;
+		patch += len;
 
 		/* Patch Common Chorus */
-		map_size = val32_be(patch);
+		len = val32_be(patch);
 		patch += 4;
-		patch += map_size;
+		patch += len;
 
 		/* Patch Common Reverb */
-		map_size = val32_be(patch);
+		len = val32_be(patch);
 		patch += 4;
-		patch += map_size;
+		patch += len;
 		
 		/* Patch TMT */
-		map_size = val32_be(patch);
+		len = val32_be(patch);
 		patch += 4;
 
 		printf("%c%c%c%c",
@@ -108,13 +108,13 @@ void list_patches(uint8 *jgl, int num)
 			patch[TMT3_TONE_SWITCH] ? '3' : '-',
 			patch[TMT4_TONE_SWITCH] ? '4' : '-');
 
-		patch += map_size;
+		patch += len;
 
 		/* Patch Tone */
 		for (i = 0; i < 4; i++) {
 			int n;
 
-			map_size = val32_be(patch);
+			len = val32_be(patch);
 			patch += 4;
 
 			switch (patch[WAVE_GROUP_TYPE]) {
@@ -132,7 +132,7 @@ void list_patches(uint8 *jgl, int num)
 				printf("  %-8.8s", "invalid");
 			}
 
-			patch += map_size;
+			patch += len;
 		}
 		printf("\n");
 	}
@@ -142,7 +142,7 @@ void send_patch(uint8 *jgl, int num)
 {
 	uint8 *patch;
 	int i, count = 0;
-	int size, map_size;
+	int size, len;
 
 	while (++count < num) {
 		size = val32_be(jgl);
@@ -153,48 +153,50 @@ void send_patch(uint8 *jgl, int num)
 	patch = jgl + 4;
 
 	/* Patch Common */
-	map_size = val32_be(patch);
+	len = val32_be(patch);
 	patch += 4;
 	printf("Patch %04d: %-12.12s\n", num, &patch[PATCH_NAME_1]);
 	printf("Sending patch common data...\n");
 
-	patch += map_size;
+	send_sysex(len, patch);
+
+	patch += len;
 
 	/* Patch Common MFX */
-	map_size = val32_be(patch);
+	len = val32_be(patch);
 	patch += 4;
 	printf("Sending patch MFX data...\n");
 
-	patch += map_size;
+	patch += len;
 
 	/* Patch Common Chorus */
-	map_size = val32_be(patch);
+	len = val32_be(patch);
 	patch += 4;
 	printf("Sending patch chorus data...\n");
 
-	patch += map_size;
+	patch += len;
 
 	/* Patch Common Reverb */
-	map_size = val32_be(patch);
+	len = val32_be(patch);
 	patch += 4;
 	printf("Sending patch reverb data...\n");
 
-	patch += map_size;
+	patch += len;
 	
 	/* Patch TMT */
-	map_size = val32_be(patch);
+	len = val32_be(patch);
 	patch += 4;
 	printf("Sending patch TMT data...\n");
 
-	patch += map_size;
+	patch += len;
 
 	/* Patch Tone */
 	for (i = 0; i < 4; i++) {
-		map_size = val32_be(patch);
+		len = val32_be(patch);
 		patch += 4;
 		printf("Sending patch tone %d data...\n", i + 1);
 
-		patch += map_size;
+		patch += len;
 	}
 }
 

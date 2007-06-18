@@ -2,7 +2,7 @@ CC	= gcc
 CFLAGS	= -O0 -g -Wall
 LD	= gcc
 LDFLAGS	=
-OBJS	= jglib.o common.o category.o junog_waves.o midi_alsa.o
+OBJS	= jglib.o common.o category.o junog_waves.o midi_alsa.o roland.o
 LIBS	= -lasound
 
 .c.o:
