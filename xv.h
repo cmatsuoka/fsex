@@ -184,6 +184,11 @@ enum xv_patch_tmt {
 /* Patch Tone */
 enum xv_patch_tone {
 	TONE_LEVEL			= 0x0000,
+	WAVE_GROUP_TYPE			= 0x0027,
+	WAVE_GROUP_ID,
+	WAVE_NUMBER_L			= 0x002c,
+	WAVE_NUMBER_R			= 0x0030,
+	WAVE_GAIN,
 };
 #define PATCH_TONE_SIZE_JG		0x011a
 #define PATCH_TONE_SIZE_XV		0x0109
@@ -196,6 +201,10 @@ struct xv_patch_category {
 };
 
 extern struct xv_patch_category patch_category[];
+extern char *xv5080_wave[];
+extern char *fantomx_wave[];
+extern char *fantoms_wave[];
+extern char *junog_wave[];
 
 int checksum	(uint8 *);
 

@@ -63,9 +63,9 @@ int check_jgl(uint8 *jgl)
 void list_patches(uint8 *jgl, int num)
 {
 	uint8 *patch;
-	int i, size, map_size;
+	int i, count, size, map_size;
 
-	for (i = 0; i < num; i++) {
+	for (count = 0; count < num; count++) {
 		size = val32_be(jgl);
 		jgl += 4;
 		patch = jgl;
@@ -76,7 +76,7 @@ void list_patches(uint8 *jgl, int num)
 		patch += 4;
 
 		printf(" %04d  %-3.3s  %-12.12s  %s  ",
-			i + 1,
+			count + 1,
 			patch_category[patch[PATCH_CATEGORY]].short_name,
 			&patch[PATCH_NAME_1],
 			patch[MONO_POLY] ? "----" : "mono");
@@ -102,13 +102,39 @@ void list_patches(uint8 *jgl, int num)
 		map_size = val32_be(patch);
 		patch += 4;
 
-		printf("%c%c%c%c\n",
+		printf("%c%c%c%c",
 			patch[TMT1_TONE_SWITCH] ? '1' : '-',
 			patch[TMT2_TONE_SWITCH] ? '2' : '-',
 			patch[TMT3_TONE_SWITCH] ? '3' : '-',
 			patch[TMT4_TONE_SWITCH] ? '4' : '-');
 
 		patch += map_size;
+
+		/* Patch Tone */
+		for (i = 0; i < 4; i++) {
+			int n;
+
+			map_size = val32_be(patch);
+			patch += 4;
+
+			switch (patch[WAVE_GROUP_TYPE]) {
+			case 0:
+				n = val32_lsn(&patch[WAVE_NUMBER_L]);
+				printf("  %-8.8s", junog_wave[n]);
+				break;
+			case 1:
+				printf("  %-8.8s", "SRX");
+				break;
+			case 2:
+				printf("  %-8.8s", "sample");
+				break;
+			default:
+				printf("  %-8.8s", "invalid");
+			}
+
+			patch += map_size;
+		}
+		printf("\n");
 	}
 }
 

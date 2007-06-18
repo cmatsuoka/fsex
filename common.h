@@ -9,6 +9,7 @@ typedef signed int int32;
 typedef signed short int16;
 typedef signed char int8;
 
+int32 val32_lsn(uint8 *);
 int32 val32_be(uint8 *);
 int32 val32_le(uint8 *);
 int32 val24_le(uint8 *);

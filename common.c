@@ -15,6 +15,12 @@ int32 val32_be(uint8 *b)
 		(((int)b[2]) << 8) | b[3];
 }
 
+int32 val32_lsn(uint8 *b)
+{
+	return (((int)b[0] & 0x0f) << 12) | (((int)b[1] & 0x0f) << 8) |
+		(((int)b[2] & 0x0f) << 4) | (b[3] & 0x0f);
+}
+
 int32 val32_le(uint8 *b)
 {
 	return (((int)b[3]) << 24) | (((int)b[2]) << 16) |
