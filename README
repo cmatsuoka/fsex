@@ -43,8 +43,8 @@ gsex can be used to list the contents of a .jgl file. To do so, run it
 with the -l parameter:
 
 $ gsex -l xv_collection.jgl
-File format   : Juno-G librarian file
-Num of patches: 1024
+File format: Juno-G librarian file
+Num patches: 1024
 
 Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 Waveform 3 Waveform 4
 ----- ---- ------------- -- ----- ---------- ---------- ---------- ----------
@@ -62,8 +62,8 @@ Sending a patch via SysEx
 You can send a patch from a .jgl file to the Juno-G using the -s parameter:
 
 $ gsex -a 20:0 -s 538 xv_collection.jgl
-File format   : Juno-G librarian file
-Num of patches: 1024
+File format: Juno-G librarian file
+Num patches: 1024
 Send to MIDI address 20:0
 Send patch 0538: PhazeWahClav (KEY)
 

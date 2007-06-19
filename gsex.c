@@ -22,7 +22,7 @@ int map_lib_file(char *filename, struct xv_libdata *lib)
 	}
 
 	lib->model = MODEL_NONE;
-	printf("File format   : ");
+	printf("File format: ");
 
 	if (!memcmp(lib->data, "JunoGLibrarianFile0000", 22)) {
 		printf("Juno-G librarian file\n");
@@ -47,7 +47,7 @@ int map_lib_file(char *filename, struct xv_libdata *lib)
 		exit(1);
 	}
 
-	printf("Num of patches: %d\n", lib->num);
+	printf("Num patches: %d\n", lib->num);
 
 	return 0;
 }
