@@ -12,6 +12,19 @@
 #define NAME "gsex"
 #define VERSION "0.0"
 
+static int blksz_jg[] = {
+	PATCH_COMMON_SIZE_JG,
+	PATCH_COMMON_MFX_SIZE_JG,
+	PATCH_COMMON_CHORUS_SIZE_JG,
+	PATCH_COMMON_REVERB_SIZE_JG,
+	PATCH_TMT_SIZE_JG,
+	PATCH_TONE_SIZE_JG,
+	PATCH_TONE_SIZE_JG,
+	PATCH_TONE_SIZE_JG,
+	PATCH_TONE_SIZE_JG,
+	-1
+};
+	
 uint8 *map_jgl_file(char *filename, int *num)
 {
 	uint8 *jgl;
@@ -29,7 +42,7 @@ uint8 *map_jgl_file(char *filename, int *num)
 	jgl += 160;
 
 	printf("Checking jgl file... ");
-	*num = check_jgl(jgl);
+	*num = check_lib(jgl, blksz_jg);
 	if (*num < 0) {
 		fprintf(stderr, "data seems to be corrputed\n");
 		exit(1);

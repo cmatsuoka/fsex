@@ -13,46 +13,25 @@
 		return -1; \
 	} } while (0)
 
-int check_jgl(uint8 *jgl)
+int check_lib(uint8 *lib, int *blksz)
 {
 	uint8 *patch;
 	int i, count, size, len;
 
 	for (count = 0; ; count++) {
-		size = val32_be(jgl);
-		jgl += 4;
-		patch = jgl;
-		jgl += size;
+		size = val32_be(lib);
+		lib += 4;
+		patch = lib;
+		lib += size;
 
 		/* Patch Common */
 		len = val32_be(patch);
-		if (len != PATCH_COMMON_SIZE_JG) break;
+		if (len != blksz[0]) break;
 		patch += 4 + len;
 
-		/* Patch Common MFX */
-		len = val32_be(patch);
-		CHECK_SIZE(len, PATCH_COMMON_MFX_SIZE_JG);
-		patch += 4 + len;
-
-		/* Patch Common Chorus */
-		len = val32_be(patch);
-		CHECK_SIZE(len, PATCH_COMMON_CHORUS_SIZE_JG);
-		patch += 4 + len;
-
-		/* Patch Common Reverb */
-		len = val32_be(patch);
-		CHECK_SIZE(len, PATCH_COMMON_REVERB_SIZE_JG);
-		patch += 4 + len;
-		
-		/* Patch TMT */
-		len = val32_be(patch);
-		CHECK_SIZE(len, PATCH_TMT_SIZE_JG);
-		patch += 4 + len;
-
-		/* Patch Tone */
-		for (i = 0; i < 4; i++) {
+		for (i = 1; blksz[i] >= 0; i++) {
 			len = val32_be(patch);
-			CHECK_SIZE(len, PATCH_TONE_SIZE_JG);
+			CHECK_SIZE(len, blksz[i]);
 			patch += 4 + len;
 		}
 	}
@@ -60,7 +39,7 @@ int check_jgl(uint8 *jgl)
 	return count;
 }
 
-void list_patches(uint8 *jgl, int num)
+void list_patches(uint8 *lib, int num)
 {
 	uint8 *patch;
 	int i, count, size, len;
@@ -71,10 +50,10 @@ void list_patches(uint8 *jgl, int num)
 			"---------- ----------\n");
 
 	for (count = 0; count < num; count++) {
-		size = val32_be(jgl);
-		jgl += 4;
-		patch = jgl;
-		jgl += size;
+		size = val32_be(lib);
+		lib += 4;
+		patch = lib;
+		lib += size;
 
 		/* Patch Common */
 		len = val32_be(patch);
@@ -143,7 +122,7 @@ void list_patches(uint8 *jgl, int num)
 	}
 }
 
-void send_patch(uint8 *jgl, int num)
+void send_patch(uint8 *lib, int num)
 {
 	uint8 *patch;
 	int i, size, len;
@@ -153,12 +132,12 @@ void send_patch(uint8 *jgl, int num)
 		PATCH_TONE_3, PATCH_TONE_4, -1 };
 
 	for (i = 0; ++i < num; ) {
-		size = val32_be(jgl);
-		jgl += 4 + size;
+		size = val32_be(lib);
+		lib += 4 + size;
 	}
 
-	size = val32_be(jgl);
-	patch = jgl + 4;
+	size = val32_be(lib);
+	patch = lib + 4;
 
 	base_addr = TEMP_PATCH_RHYTHM_PART1 + TEMP_PATCH;
 
