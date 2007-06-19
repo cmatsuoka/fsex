@@ -7,6 +7,7 @@
 #include "common.h"
 #include "jglib.h"
 #include "midi.h"
+#include "xv.h"
 
 #define NAME "gsex"
 #define VERSION "0.0"
@@ -42,16 +43,16 @@ void usage()
 {
 	printf("Usage: " NAME " [options] [filename]\n");
 	printf("    -a ccc:ppp	alsa MIDI client:port\n"); 
-	//printf("    -D		detect synth model\n");
+	printf("    -D		detect synth model\n");
 	printf("    -h		show short description and exit\n");
 	printf("    -l		list patches in librarian file\n");
 	printf("    -s nnn	send temporary patch to Juno-G\n");
 }
 
-#define OPTIONS "a:lhs:V"
+#define OPTIONS "a:Dlhs:V"
 static struct option lopt[] = {
 	{ "address",		1, 0, 'a' },
-	//{ "detect",		0, 0, 'D' },
+	{ "detect",		0, 0, 'D' },
 	{ "help",		0, 0, 'h' },
 	{ "version",            0, 0, 'V' },
 	{ "list",		0, 0, 'l' },
@@ -62,21 +63,24 @@ int main(int argc, char **argv)
 {
 	uint8 *jgl;
 	int num;
-	int o, optidx, opt_list, opt_send;
+	int o, optidx, opt_list, opt_send, opt_detect;
 	char *filename, *addr;
 
 	addr = NULL;
-	opt_list = opt_send = 0;
+	opt_list = opt_send = opt_detect = 0;
 	filename = NULL;
 
 	while ((o = getopt_long(argc, argv, OPTIONS, lopt, &optidx)) > 0) {
 		switch (o) {
-		case 'h':
-			usage();
-			exit(0);
 		case 'a':
 			addr = optarg;
 			break;
+		case 'D':
+			opt_detect = 1;
+			break;
+		case 'h':
+			usage();
+			exit(0);
 		case 'l':
 			opt_list = 1;
 			break;
@@ -98,6 +102,16 @@ int main(int argc, char **argv)
 
 	filename = argv[optind];
 
+	if (opt_detect) {
+		if (midi_open(NAME, addr) < 0) {
+			fprintf(stderr, "error: can't open sequencer\n");
+			return 1;
+		}
+		sysex_get_id();
+		midi_close();
+		exit(0);
+	}
+
 	if (opt_list) {
 		jgl = map_jgl_file(filename, &num);
 		list_patches(jgl, num);
@@ -106,16 +120,12 @@ int main(int argc, char **argv)
 
 	if (opt_send) {
 		jgl = map_jgl_file(filename, &num);
-
 		if (midi_open(NAME, addr) < 0) {
 			fprintf(stderr, "error: can't open sequencer\n");
 			return 1;
 		}
-
 		send_patch(jgl, opt_send);
-
 		midi_close();
-
 		exit(0);
 	}
 

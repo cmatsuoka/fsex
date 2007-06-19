@@ -25,11 +25,16 @@ static void midi_send(snd_seq_event_t *ev, int d)
 static int midi_recv(int len, uint8 *ptr)
 {
 	snd_seq_event_t *ev;
-	int n;
+	int n, i;
 
-	snd_seq_event_input(seq, &ev);
-        n = snd_midi_event_decode(mev, ptr, len, ev);
-        snd_seq_free_event(ev);
+	n = 0;
+	do {
+		i = snd_seq_event_input(seq, &ev);
+        	n += snd_midi_event_decode(mev, ptr, len, ev);
+		ptr += i;
+		len -= i;
+        	snd_seq_free_event(ev);
+	} while (i > 0);
 
         return n;
 }
@@ -39,7 +44,7 @@ int midi_open(char *name, char *addr)
 	snd_seq_addr_t d;
 	int caps;
 
-	if (snd_seq_open(&seq, "hw", SND_SEQ_OPEN_OUTPUT, 0) < 0)
+	if (snd_seq_open(&seq, "hw", SND_SEQ_OPEN_DUPLEX, 0) < 0)
 		return -1;
 
 	if (snd_seq_parse_address(seq, &d, addr) < 0)
@@ -84,6 +89,7 @@ int midi_open(char *name, char *addr)
 
 void midi_close()
 {
+	snd_midi_event_free(mev);
 	snd_seq_close(seq);
 }
 

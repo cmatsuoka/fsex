@@ -63,3 +63,24 @@ int recv_sysex(int len, uint8 *data)
 	return midi_sysex_recv(len, data);
 }
 
+void sysex_get_id()
+{
+	static uint8 buf[550];
+	int i, len;
+	
+	i = 0;
+	buf[i++] = MIDI_CMD_COMMON_SYSEX;
+	buf[i++] = 0x7e;	/* ID number */
+	buf[i++] = 0x10;	/* Device ID (FIXME: user-assignable) */
+	buf[i++] = 0x06;	/* Sub ID#1 (General information) */
+	buf[i++] = 0x01;	/* Sub ID#2 (Identity request) */
+	buf[i++] = MIDI_CMD_COMMON_SYSEX_END;
+
+	midi_sysex_send(i, buf);
+	len = midi_sysex_recv(500, buf);
+
+	for (i = 0; i < len; i++) {
+		printf(" %02x", buf[i]);
+	}
+	printf("\n");
+}
