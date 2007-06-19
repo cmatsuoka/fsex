@@ -146,11 +146,13 @@ void list_patches(uint8 *jgl, int num)
 void send_patch(uint8 *jgl, int num)
 {
 	uint8 *patch;
-	int count = 0;
-	int size, len;
+	int i, size, len;
 	uint32 base_addr;
+	int offset[] = { PATCH_COMMON, PATCH_COMMON_MFX, PATCH_COMMON_CHORUS,
+		PATCH_COMMON_REVERB, PATCH_TMT, PATCH_TONE_1, PATCH_TONE_2,
+		PATCH_TONE_3, PATCH_TONE_4, -1 };
 
-	while (++count < num) {
+	for (i = 0; ++i < num; ) {
 		size = val32_be(jgl);
 		jgl += 4 + size;
 	}
@@ -160,68 +162,15 @@ void send_patch(uint8 *jgl, int num)
 
 	base_addr = TEMP_PATCH_RHYTHM_PART1 + TEMP_PATCH;
 
-	/* Patch Common */
-	len = val32_be(patch);
-	patch += 4;
-	printf("Patch %04d: %-12.12s\n", num, &patch[PATCH_NAME_1]);
-	printf("Sending patch common data...\n");
-	send_sysex(base_addr + PATCH_COMMON, len, patch);
-	patch += len;
+	printf("Send patch %04d: %-12.12s (%s)\n",
+		num, &patch[4 + PATCH_NAME_1],
+		patch_category[patch[4 + PATCH_CATEGORY]].short_name);
 
-	/* Patch Common MFX */
-	len = val32_be(patch);
-	patch += 4;
-	printf("Sending patch MFX data...\n");
-	send_sysex(base_addr + PATCH_COMMON_MFX, len, patch);
-	patch += len;
-
-	/* Patch Common Chorus */
-	len = val32_be(patch);
-	patch += 4;
-	printf("Sending patch chorus data...\n");
-	send_sysex(base_addr + PATCH_COMMON_CHORUS, len, patch);
-	patch += len;
-
-	/* Patch Common Reverb */
-	len = val32_be(patch);
-	patch += 4;
-	printf("Sending patch reverb data...\n");
-	send_sysex(base_addr + PATCH_COMMON_REVERB, len, patch);
-	patch += len;
-	
-	/* Patch TMT */
-	len = val32_be(patch);
-	patch += 4;
-	printf("Sending patch TMT data...\n");
-	send_sysex(base_addr + PATCH_TMT, len, patch);
-	patch += len;
-
-	/* Patch Tone 1 */
-	len = val32_be(patch);
-	patch += 4;
-	printf("Sending patch tone 1 data...\n");
-	send_sysex(base_addr + PATCH_TONE_1, len, patch);
-	patch += len;
-
-	/* Patch Tone 2 */
-	len = val32_be(patch);
-	patch += 4;
-	printf("Sending patch tone 2 data...\n");
-	send_sysex(base_addr + PATCH_TONE_2, len, patch);
-	patch += len;
-
-	/* Patch Tone 3 */
-	len = val32_be(patch);
-	patch += 4;
-	printf("Sending patch tone 3 data...\n");
-	send_sysex(base_addr + PATCH_TONE_3, len, patch);
-	patch += len;
-
-	/* Patch Tone 4 */
-	len = val32_be(patch);
-	patch += 4;
-	printf("Sending patch tone 4 data...\n");
-	send_sysex(base_addr + PATCH_TONE_4, len, patch);
-	patch += len;
+	for (i = 0; offset[i] >= 0; i++) {
+		len = val32_be(patch);
+		patch += 4;
+		send_sysex(base_addr + offset[i], len, patch);
+		patch += len;
+	}
 }
 

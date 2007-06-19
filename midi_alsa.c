@@ -55,8 +55,8 @@ int midi_open(int client, int port)
 		return -1;
 	}
 
-	printf("My address %d:%d\n", my_client, my_port);
-	printf("Destination address %d:%d\n", dest_client, dest_port);
+	//printf("My address %d:%d\n", my_client, my_port);
+	printf("Send to MIDI address %d:%d\n", dest_client, dest_port);
 
 	if (dest_client != SND_SEQ_ADDRESS_SUBSCRIBERS) {
                 if (snd_seq_connect_to(seq, my_port, dest_client, dest_port) < 0) {
