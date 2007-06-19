@@ -36,19 +36,20 @@ static int midi_recv(int len, uint8 *ptr)
 
 int midi_open(char *name, char *addr)
 {
-	snd_seq_addr_t dest;
+	snd_seq_addr_t d;
 	int caps;
 
 	if (snd_seq_open(&seq, "hw", SND_SEQ_OPEN_OUTPUT, 0) < 0)
 		return -1;
 
-	if (snd_seq_parse_address(seq, &dest, addr) < 0)
+	if (snd_seq_parse_address(seq, &d, addr) < 0)
 		return -2;
-
-	_D(_D_INFO "My address %d:%d", my_client, my_port);
 
 	if (snd_midi_event_new(512, &mev))
 		return -3;
+
+	dest_client = d.client;
+	dest_port = d.port;
 	
 	my_client = snd_seq_client_id(seq);
 	snd_seq_set_client_name(seq, name);
@@ -66,12 +67,13 @@ int midi_open(char *name, char *addr)
 		return -1;
 	}
 
-	printf("Send to MIDI address %d:%d\n", dest.client, dest.port);
+	_D(_D_INFO "My address %d:%d", my_client, my_port);
+	printf("Send to MIDI address %d:%d\n", dest_client, dest_port);
 
-	if (dest.client != SND_SEQ_ADDRESS_SUBSCRIBERS) {
-                if (snd_seq_connect_to(seq, my_port, dest.client, dest.port) < 0) {
+	if (dest_client != SND_SEQ_ADDRESS_SUBSCRIBERS) {
+                if (snd_seq_connect_to(seq, my_port, dest_client, dest_port) < 0) {
 			fprintf(stderr, "error: can't subscribe to MIDI port"
-					" (%d:%d)\n", dest.client, dest.port);
+					" (%d:%d)\n", dest_client, dest_port);
                         snd_seq_close(seq);
                         return -1;
                 }
