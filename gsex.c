@@ -10,11 +10,14 @@
 
 #define NAME "gsex"
 #define VERSION "0.0"
+#define DEFAULT_ADDR "20:0"
+
+#define STR(x) # x
 
 int map_lib_file(char *filename, struct xv_libdata *lib)
 {
 	lib->data = mapfile(filename);
-	if (lib->data == 0) {
+	if (lib->data == NULL) {
 		perror(filename);
 		exit(1);
 	}
@@ -55,12 +58,12 @@ void usage()
 	printf(
 "Usage: " NAME " [options] [filename]\n"
 "available options:\n"
-"	-a <address>	alsa MIDI device address (client:port)\n"
-"	-D		detect synth model\n"
-"	-d <device id>	MIDI device ID (default 0x10)\n"
-"	-h		show short description and exit\n"
-"	-l		list patches in librarian file\n"
-"	-s <patch num>	send temporary patch to Juno-G\n"
+"    -a <address>	alsa MIDI device address (default " DEFAULT_ADDR ")\n"
+"    -D			detect synth model\n"
+"    -d <device id>	MIDI device ID (default 0x10)\n"
+"    -h			show short description and exit\n"
+"    -l			list patches in librarian file\n"
+"    -s <patch num>	send temporary patch to Juno-G\n"
 	);
 }
 
@@ -82,7 +85,7 @@ int main(int argc, char **argv)
 	struct xv_libdata lib;
 	int dev_id;
 
-	addr = NULL;
+	addr = DEFAULT_ADDR;
 	opt_list = opt_send = opt_detect = 0;
 	dev_id = 0x10;
 	filename = NULL;
@@ -115,17 +118,13 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (optind >= argc) {
-		usage();
-		exit(1);
-	}
-
-	filename = argv[optind];
+	if (optind < argc)
+		filename = argv[optind];
 
 	if (opt_detect) {
 		if (midi_open(NAME, addr) < 0) {
 			fprintf(stderr, "error: can't open sequencer\n");
-			return 1;
+			exit(1);
 		}
 		sysex_get_id(dev_id);
 		midi_close();
@@ -133,12 +132,20 @@ int main(int argc, char **argv)
 	}
 
 	if (opt_list) {
+		if (!filename) {
+			fprintf(stderr, "error: library file required\n");
+			exit(1);
+		}
 		map_lib_file(filename, &lib);
 		list_patches(&lib);
 		exit(0);
 	}
 
 	if (opt_send) {
+		if (!filename) {
+			fprintf(stderr, "error: library file required\n");
+			exit(1);
+		}
 		map_lib_file(filename, &lib);
 		if (midi_open(NAME, addr) < 0) {
 			fprintf(stderr, "error: can't open sequencer\n");
@@ -148,6 +155,9 @@ int main(int argc, char **argv)
 		midi_close();
 		exit(0);
 	}
+
+	fprintf(stderr, NAME ": no action specified\n");
+	fprintf(stderr, "Run `" NAME "-h' for more information\n");
 
 	return 0;
 }
