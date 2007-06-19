@@ -8,6 +8,8 @@
 #include "jglib.h"
 #include "midi.h"
 
+#define NAME "gsex"
+#define VERSION "0.0"
 
 uint8 *map_jgl_file(char *filename, int *num)
 {
@@ -38,7 +40,7 @@ uint8 *map_jgl_file(char *filename, int *num)
 
 void usage()
 {
-	printf("Usage: gsex [-a ccc:ppp] [-h | -l | -s nnn] <filename>\n");
+	printf("Usage: " NAME " [options] [filename]\n");
 	printf("    -a ccc:ppp	alsa MIDI client:port\n"); 
 	//printf("    -D		detect synth model\n");
 	printf("    -h		show short description and exit\n");
@@ -46,11 +48,21 @@ void usage()
 	printf("    -s nnn	send temporary patch to Juno-G\n");
 }
 
+#define OPTIONS "a:lhs:V"
+static struct option lopt[] = {
+	{ "address",		1, 0, 'a' },
+	//{ "detect",		0, 0, 'D' },
+	{ "help",		0, 0, 'h' },
+	{ "version",            0, 0, 'V' },
+	{ "list",		0, 0, 'l' },
+	{ "send",		1, 0, 's' },
+};
+
 int main(int argc, char **argv)
 {
 	uint8 *jgl;
 	int num;
-	int o, opt_list, opt_send;
+	int o, optidx, opt_list, opt_send;
 	char *filename, *p;
 	int client, port;
 
@@ -58,7 +70,7 @@ int main(int argc, char **argv)
 	opt_list = opt_send = 0;
 	filename = NULL;
 
-	while ((o = getopt(argc, argv, "a:lhs:")) > 0) {
+	while ((o = getopt_long(argc, argv, OPTIONS, lopt, &optidx)) > 0) {
 		switch (o) {
 		case 'h':
 			usage();
@@ -73,6 +85,9 @@ int main(int argc, char **argv)
 		case 's':
 			opt_send = strtoul(optarg, NULL, 0);
 			break;
+		case 'V':
+			printf(NAME " " VERSION "\n");
+			exit(0);
 		default:
 			exit(1);
 		}
