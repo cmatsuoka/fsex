@@ -9,7 +9,6 @@
 #include "xv.h"
 
 #define NAME "gsex"
-#define VERSION "0.0"
 #define DEFAULT_ADDR "20:0"
 
 #define STR(x) # x
