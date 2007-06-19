@@ -5,3 +5,47 @@ patches from a .jgl file to the synthesizer. It is currently Juno-G specific,
 but should work with little changes with other Roland devices using the XV
 engine such as the XV-5080 or Fantom.
 
+
+Certain operations require the ALSA MIDI port address where the synthesizer
+is connected in client:port format. The address can be obtained using the
+"aconnect" utility:
+
+$ aconnect -o
+client 14: 'Midi Through' [type=kernel]
+    0 'Midi Through Port-0'
+client 20: 'Juno-G' [type=kernel]
+    0 'Juno-G MIDI 1   '
+
+In this case the address of the Juno-G MIDI port is 20:0
+
+
+Listing patches from a .jgl file
+================================
+
+gsex can be used to list the contents of a .jgl file. To do so, run it
+with the -l parameter:
+
+$ gsex -l xv_collection.jgl
+Checking jgl file... ok
+Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 Waveform 3 Waveform 4
+----- ---- ------------- -- ----- ---------- ---------- ---------- ----------
+0001  PNO  Standard Pno  P  -2--  (unset)    JD Piano A (unset)    (unset)
+0002  PNO  Bright Piano  P  -2--  (unset)    JD Piano A (unset)    (unset)
+0003  PNO  Classique     P  12--  Ac.Pno f A JD Piano A (unset)    (unset)
+0004  PNO  Nice Piano    P  1-34  JD Piano A JD Piano A JD Piano B Piano Atk
+0005  PNO  Piano Thang   P  123-  JD Piano A MKS Piano  JD Piano A (unset)
+0006  PNO  Power Grand   P  1-34  JD Piano A (unset)    JD Piano C MKS Piano
+0007  TEK  House Piano   P  12--  JD Piano B 3rd Perc O (unset)    (unset)
+...
+
+
+Sending a patch via SysEx
+=========================
+
+You can send a patch from a .jgl file to the Juno-G using the -s parameter:
+
+$ gsex -a 20:0 -s 538 xv_collection.jgl
+Checking jgl file... ok
+Send to MIDI address 20:0
+Send patch 0538: PhazeWahClav (KEY)
+
