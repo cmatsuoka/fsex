@@ -5,6 +5,7 @@
 
 #include "common.h"
 #include "midi.h"
+#include "xv.h"
 
 int checksum(int len, uint8 *data)
 {
@@ -13,9 +14,11 @@ int checksum(int len, uint8 *data)
 	acc = 0;
 	for (i = 0; i < len; i++) {
 		acc += *data++;
-		if (acc > 0x7)
+		if (acc > 0x7f)
 			acc -= 0x80;
 	}
+
+	acc %= 0x80;
 
 	return 0x80 - acc;
 }
@@ -23,7 +26,7 @@ int checksum(int len, uint8 *data)
 void send_sysex(uint32 addr, int len, uint8 *data)
 {
 	static uint8 buf[550];
-	int sum;
+	int sum, start;
 	int i;
 
 	assert(len < 500);
@@ -37,6 +40,8 @@ void send_sysex(uint32 addr, int len, uint8 *data)
 	buf[i++] = 0x15;	/* Juno-G ID */
 	buf[i++] = 0x12;	/* Command ID (DT1) */
 
+	start = i;
+
 	buf[i++] = (addr & 0xff000000) >> 24;
 	buf[i++] = (addr & 0x00ff0000) >> 16;
 	buf[i++] = (addr & 0x0000ff00) >> 8;
@@ -45,15 +50,16 @@ void send_sysex(uint32 addr, int len, uint8 *data)
 	memcpy(buf + i, data, len);
 	i += len;
 
-	sum = checksum(i - 2, data + 2);
+	sum = checksum(len + 4, buf + start);
 
 	buf[i++] = sum;
 	buf[i++] = MIDI_CMD_COMMON_SYSEX_END;
 
 	midi_sysex(i, buf);
+
 }
 
-void recv_sysex(int addr, int len, uint8 *data)
+void recv_sysex(uint32 addr, int len, uint8 *data)
 {
 	static uint8 buf[550];
 	int sum;

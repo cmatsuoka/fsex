@@ -20,6 +20,14 @@ static void midi_send(snd_seq_event_t *ev, int d)
 	snd_seq_drain_output(seq);
 }
 
+static void midi_recv(snd_seq_event_t *ev)
+{
+	snd_seq_ev_set_direct(ev);
+	snd_seq_ev_set_source(ev, my_port);
+	snd_seq_ev_set_dest(ev, dest_client, dest_port);
+        snd_seq_event_input(seq, &ev);
+}
+
 int midi_open(int client, int port)
 {
 	char *name = "test";
