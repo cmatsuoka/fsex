@@ -216,11 +216,11 @@ extern char *fantomx_wave[];
 extern char *junog_wave[];
 
 int	checksum	(int, uint8 *);
-void	send_sysex	(uint32, int, uint8 *);
+void	send_sysex	(int, uint32, int, uint8 *);
 int	recv_sysex	(int, uint8 *);
-void	sysex_get_id	(void);
+void	sysex_get_id	(int);
 int     check_lib       (struct xv_libdata *);
 void	list_patches    (struct xv_libdata *);
-void	send_patch	(struct xv_libdata *, int);
+void	send_patch	(struct xv_libdata *, int, int);
 
 #endif

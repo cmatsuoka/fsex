@@ -23,7 +23,7 @@ int checksum(int len, uint8 *data)
 	return 0x80 - acc;
 }
 
-void send_sysex(uint32 addr, int len, uint8 *data)
+void send_sysex(int dev_id, uint32 addr, int len, uint8 *data)
 {
 	static uint8 buf[550];
 	int sum, start;
@@ -34,7 +34,7 @@ void send_sysex(uint32 addr, int len, uint8 *data)
 	i = 0;
 	buf[i++] = MIDI_CMD_COMMON_SYSEX;
 	buf[i++] = 0x41;	/* Roland ID */
-	buf[i++] = 0x10;	/* Device ID (FIXME: user-assignable) */
+	buf[i++] = dev_id;	/* Device ID (FIXME: user-assignable) */
 	buf[i++] = 0x00;	/* Juno-G ID (FIXME: allow other devices) */
 	buf[i++] = 0x00;	/* Juno-G ID */
 	buf[i++] = 0x15;	/* Juno-G ID */
@@ -63,7 +63,7 @@ int recv_sysex(int len, uint8 *data)
 	return midi_sysex_recv(len, data);
 }
 
-void sysex_get_id()
+void sysex_get_id(int dev_id)
 {
 	static uint8 buf[550];
 	int i, len;
@@ -71,7 +71,7 @@ void sysex_get_id()
 	i = 0;
 	buf[i++] = MIDI_CMD_COMMON_SYSEX;
 	buf[i++] = 0x7e;	/* ID number */
-	buf[i++] = 0x10;	/* Device ID (FIXME: user-assignable) */
+	buf[i++] = dev_id;	/* Device ID */
 	buf[i++] = 0x06;	/* Sub ID#1 (General information) */
 	buf[i++] = 0x01;	/* Sub ID#2 (Identity request) */
 	buf[i++] = MIDI_CMD_COMMON_SYSEX_END;

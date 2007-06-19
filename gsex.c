@@ -52,18 +52,23 @@ int map_lib_file(char *filename, struct xv_libdata *lib)
 
 void usage()
 {
-	printf("Usage: " NAME " [options] [filename]\n");
-	printf("    -a ccc:ppp	alsa MIDI client:port\n"); 
-	printf("    -D		detect synth model\n");
-	printf("    -h		show short description and exit\n");
-	printf("    -l		list patches in librarian file\n");
-	printf("    -s nnn	send temporary patch to Juno-G\n");
+	printf(
+"Usage: " NAME " [options] [filename]\n"
+"available options:\n"
+"	-a <address>	alsa MIDI device address (client:port)\n"
+"	-D		detect synth model\n"
+"	-d <device id>	MIDI device ID (default 0x10)\n"
+"	-h		show short description and exit\n"
+"	-l		list patches in librarian file\n"
+"	-s <patch num>	send temporary patch to Juno-G\n"
+	);
 }
 
-#define OPTIONS "a:Dlhs:V"
+#define OPTIONS "a:Dd:lhs:V"
 static struct option lopt[] = {
 	{ "address",		1, 0, 'a' },
 	{ "detect",		0, 0, 'D' },
+	{ "device",		1, 0, 'd' },
 	{ "help",		0, 0, 'h' },
 	{ "version",            0, 0, 'V' },
 	{ "list",		0, 0, 'l' },
@@ -75,9 +80,11 @@ int main(int argc, char **argv)
 	int o, optidx, opt_list, opt_send, opt_detect;
 	char *filename, *addr;
 	struct xv_libdata lib;
+	int dev_id;
 
 	addr = NULL;
 	opt_list = opt_send = opt_detect = 0;
+	dev_id = 0x10;
 	filename = NULL;
 
 	while ((o = getopt_long(argc, argv, OPTIONS, lopt, &optidx)) > 0) {
@@ -87,6 +94,9 @@ int main(int argc, char **argv)
 			break;
 		case 'D':
 			opt_detect = 1;
+			break;
+		case 'd':
+			dev_id = strtoul(optarg, NULL, 0);
 			break;
 		case 'h':
 			usage();
@@ -117,7 +127,7 @@ int main(int argc, char **argv)
 			fprintf(stderr, "error: can't open sequencer\n");
 			return 1;
 		}
-		sysex_get_id();
+		sysex_get_id(dev_id);
 		midi_close();
 		exit(0);
 	}
@@ -134,7 +144,7 @@ int main(int argc, char **argv)
 			fprintf(stderr, "error: can't open sequencer\n");
 			return 1;
 		}
-		send_patch(&lib, opt_send);
+		send_patch(&lib, opt_send, dev_id);
 		midi_close();
 		exit(0);
 	}

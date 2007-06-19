@@ -163,7 +163,7 @@ void list_patches(struct xv_libdata *lib)
 	}
 }
 
-void send_patch(struct xv_libdata *lib, int num)
+void send_patch(struct xv_libdata *lib, int num, int dev_id)
 {
 	uint8 *patch, *data;
 	int i, size, len;
@@ -191,7 +191,7 @@ void send_patch(struct xv_libdata *lib, int num)
 	for (i = 0; offset[i] >= 0; i++) {
 		len = val32_be(patch);
 		patch += 4;
-		send_sysex(base_addr + offset[i], len, patch);
+		send_sysex(dev_id, base_addr + offset[i], len, patch);
 		patch += len;
 	}
 }
