@@ -5,51 +5,43 @@
 #include <getopt.h>
 
 #include "common.h"
-#include "jglib.h"
 #include "midi.h"
 #include "xv.h"
 
 #define NAME "gsex"
 #define VERSION "0.0"
 
-static int blksz_jg[] = {
-	PATCH_COMMON_SIZE_JG,
-	PATCH_COMMON_MFX_SIZE_JG,
-	PATCH_COMMON_CHORUS_SIZE_JG,
-	PATCH_COMMON_REVERB_SIZE_JG,
-	PATCH_TMT_SIZE_JG,
-	PATCH_TONE_SIZE_JG,
-	PATCH_TONE_SIZE_JG,
-	PATCH_TONE_SIZE_JG,
-	PATCH_TONE_SIZE_JG,
-	-1
-};
-	
-uint8 *map_jgl_file(char *filename, int *num)
+int map_lib_file(char *filename, struct xv_libdata *lib)
 {
-	uint8 *jgl;
-
-	jgl = mapfile(filename);
-	if (jgl == 0) {
+	lib->data = mapfile(filename);
+	if (lib->data == 0) {
 		perror(filename);
 		exit(1);
 	}
 
-	if (memcmp(jgl, "JunoGLibrarianFile0000", 22)) {
-		fprintf(stderr, "not a Juno-G library\n");
+	lib->model = MODEL_NONE;
+	printf("Checking library file... ");
+
+	if (!memcmp(lib->data, "JunoGLibrarianFile0000", 22)) {
+		printf("Juno-G librarian file\n");
+		lib->model = MODEL_JUNOG;
+		lib->data += 160;
+	} else if (!memcmp(lib->data,"FantomXLibrarianFile0000", 24)) {
+		printf("Fantom-X librarian file\n");
+		lib->model = MODEL_FANTOMX;
+		lib->data += 160;
+	} else {
+		printf("unknown\n");
 		exit(1);
 	}
-	jgl += 160;
 
-	printf("Checking jgl file... ");
-	*num = check_lib(jgl, blksz_jg);
-	if (*num < 0) {
-		fprintf(stderr, "data seems to be corrputed\n");
+	lib->num = check_lib(lib);
+	if (lib->num < 0) {
+		printf("data seems to be corrupted\n");
 		exit(1);
 	}
-	printf("ok\n");
 
-	return jgl;
+	return 0;
 }
 
 void usage()
@@ -74,10 +66,9 @@ static struct option lopt[] = {
 
 int main(int argc, char **argv)
 {
-	uint8 *jgl;
-	int num;
 	int o, optidx, opt_list, opt_send, opt_detect;
 	char *filename, *addr;
+	struct xv_libdata lib;
 
 	addr = NULL;
 	opt_list = opt_send = opt_detect = 0;
@@ -126,18 +117,18 @@ int main(int argc, char **argv)
 	}
 
 	if (opt_list) {
-		jgl = map_jgl_file(filename, &num);
-		list_patches(jgl, num);
+		map_lib_file(filename, &lib);
+		list_patches(&lib);
 		exit(0);
 	}
 
 	if (opt_send) {
-		jgl = map_jgl_file(filename, &num);
+		map_lib_file(filename, &lib);
 		if (midi_open(NAME, addr) < 0) {
 			fprintf(stderr, "error: can't open sequencer\n");
 			return 1;
 		}
-		send_patch(jgl, opt_send);
+		send_patch(&lib, opt_send);
 		midi_close();
 		exit(0);
 	}

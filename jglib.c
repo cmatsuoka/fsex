@@ -3,7 +3,6 @@
 
 #include "common.h"
 #include "xv.h"
-#include "jglib.h"
 
 
 #define CHECK_SIZE(x,y) do {\
@@ -13,16 +12,44 @@
 		return -1; \
 	} } while (0)
 
-int check_lib(uint8 *lib, int *blksz)
+
+
+static int blksz_jg[] = {
+	PATCH_COMMON_SIZE_JG,
+	PATCH_COMMON_MFX_SIZE_JG,
+	PATCH_COMMON_CHORUS_SIZE_JG,
+	PATCH_COMMON_REVERB_SIZE_JG,
+	PATCH_TMT_SIZE_JG,
+	PATCH_TONE_SIZE_JG,
+	PATCH_TONE_SIZE_JG,
+	PATCH_TONE_SIZE_JG,
+	PATCH_TONE_SIZE_JG,
+	-1
+};
+
+
+int check_lib(struct xv_libdata *lib)
 {
-	uint8 *patch;
+	uint8 *data, *patch;
 	int i, count, size, len;
+	int *blksz;
+
+	data = lib->data;
+
+	switch(lib->model) {
+	case MODEL_JUNOG:
+	case MODEL_FANTOMX:
+		blksz = blksz_jg;
+		break;
+	default:
+		return -1;
+	}
 
 	for (count = 0; ; count++) {
-		size = val32_be(lib);
-		lib += 4;
-		patch = lib;
-		lib += size;
+		size = val32_be(data);
+		data += 4;
+		patch = data;
+		data += size;
 
 		/* Patch Common */
 		len = val32_be(patch);
@@ -39,21 +66,23 @@ int check_lib(uint8 *lib, int *blksz)
 	return count;
 }
 
-void list_patches(uint8 *lib, int num)
+void list_patches(struct xv_libdata *lib)
 {
-	uint8 *patch;
+	uint8 *patch, *data;
 	int i, count, size, len;
+
+	data = lib->data;
 
 	printf("Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 "
 			"Waveform 3 Waveform 4\n");
 	printf("----- ---- ------------- -- ----- ---------- ---------- "
 			"---------- ----------\n");
 
-	for (count = 0; count < num; count++) {
-		size = val32_be(lib);
-		lib += 4;
-		patch = lib;
-		lib += size;
+	for (count = 0; count < lib->num; count++) {
+		size = val32_be(data);
+		data += 4;
+		patch = data;
+		data += size;
 
 		/* Patch Common */
 		len = val32_be(patch);
@@ -104,7 +133,16 @@ void list_patches(uint8 *lib, int num)
 			switch (patch[WAVE_GROUP_TYPE]) {
 			case 0:
 				n = val32_lsn(&patch[WAVE_NUMBER_L]);
-				printf(" %-10.10s", junog_wave[n]);
+				switch(lib->model) {
+				case MODEL_JUNOG:
+					printf(" %-10.10s", junog_wave[n]);
+					break;
+				case MODEL_FANTOMX:
+					printf(" %-10.10s", fantom_wave[n]);
+					break;
+				default:
+					printf(" %-10.10s", "(unknown)");
+				}
 				break;
 			case 1:
 				printf(" %-10.10s", "SRX");
@@ -122,22 +160,24 @@ void list_patches(uint8 *lib, int num)
 	}
 }
 
-void send_patch(uint8 *lib, int num)
+void send_patch(struct xv_libdata *lib, int num)
 {
-	uint8 *patch;
+	uint8 *patch, *data;
 	int i, size, len;
 	uint32 base_addr;
 	int offset[] = { PATCH_COMMON, PATCH_COMMON_MFX, PATCH_COMMON_CHORUS,
 		PATCH_COMMON_REVERB, PATCH_TMT, PATCH_TONE_1, PATCH_TONE_2,
 		PATCH_TONE_3, PATCH_TONE_4, -1 };
 
+	data = lib->data;
+	
 	for (i = 0; ++i < num; ) {
-		size = val32_be(lib);
-		lib += 4 + size;
+		size = val32_be(data);
+		data += 4 + size;
 	}
 
-	size = val32_be(lib);
-	patch = lib + 4;
+	size = val32_be(data);
+	patch = data + 4;
 
 	base_addr = TEMP_PATCH_RHYTHM_PART1 + TEMP_PATCH;
 

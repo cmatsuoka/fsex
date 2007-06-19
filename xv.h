@@ -4,10 +4,13 @@
 
 #include "common.h"
 
-#define MODEL_XV5080			0x0010
-#define MODEL_FANTOMS			0x000000
-#define MODEL_FANTOMX			0x000000
-#define MODEL_JUNOG			0x000015
+enum xv_model {
+	MODEL_NONE,
+	MODEL_XV5080,
+	MODEL_FANTOMS,
+	MODEL_FANTOMX,
+	MODEL_JUNOG
+};
 
 enum xv_address_map {
 	TEMP_PATCH_RHYTHM_PART1		= 0x1f000000,
@@ -200,15 +203,24 @@ struct xv_patch_category {
 	char *long_name;
 };
 
+struct xv_libdata {
+	int model;
+	int num;
+	uint8 *data;
+};
+
 extern struct xv_patch_category patch_category[];
 extern char *xv5080_wave[];
 extern char *fantom_wave[];
 extern char *fantomx_wave[];
 extern char *junog_wave[];
 
-int checksum	(int, uint8 *);
-void send_sysex	(uint32, int, uint8 *);
-int recv_sysex	(int, uint8 *);
-void sysex_get_id (void);
+int	checksum	(int, uint8 *);
+void	send_sysex	(uint32, int, uint8 *);
+int	recv_sysex	(int, uint8 *);
+void	sysex_get_id	(void);
+int     check_lib       (struct xv_libdata *);
+void	list_patches    (struct xv_libdata *);
+void	send_patch	(struct xv_libdata *, int);
 
 #endif

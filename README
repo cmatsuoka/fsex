@@ -37,7 +37,7 @@ gsex can be used to list the contents of a .jgl file. To do so, run it
 with the -l parameter:
 
 $ gsex -l xv_collection.jgl
-Checking jgl file... ok
+Checking library file... Juno-G librarian file
 Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 Waveform 3 Waveform 4
 ----- ---- ------------- -- ----- ---------- ---------- ---------- ----------
 0001  PNO  Standard Pno  P  -2--  (unset)    JD Piano A (unset)    (unset)
