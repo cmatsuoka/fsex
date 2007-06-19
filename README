@@ -5,6 +5,8 @@ patches from a .jgl file to the synthesizer. It is currently Juno-G specific,
 but should work with little changes with other Roland devices using the XV
 engine such as the XV-5080 or Fantom.
 
+gsex should be renamed to fsex after support to Fantom is added.
+
 
 Kernel patch
 ============
@@ -56,7 +58,8 @@ Sending a patch via SysEx
 You can send a patch from a .jgl file to the Juno-G using the -s parameter:
 
 $ gsex -a 20:0 -s 538 xv_collection.jgl
-Checking jgl file... ok
+File format   : Juno-G librarian file
+Num of patches: 1024
 Send to MIDI address 20:0
 Send patch 0538: PhazeWahClav (KEY)
 
