@@ -63,10 +63,9 @@ int main(int argc, char **argv)
 	uint8 *jgl;
 	int num;
 	int o, optidx, opt_list, opt_send;
-	char *filename, *p;
-	int client, port;
+	char *filename, *addr;
 
-	client = port = 0;
+	addr = NULL;
 	opt_list = opt_send = 0;
 	filename = NULL;
 
@@ -76,8 +75,7 @@ int main(int argc, char **argv)
 			usage();
 			exit(0);
 		case 'a':
-			client = strtoul(optarg, &p, 0);
-			port = strtoul(++p, NULL, 0);
+			addr = optarg;
 			break;
 		case 'l':
 			opt_list = 1;
@@ -109,7 +107,7 @@ int main(int argc, char **argv)
 	if (opt_send) {
 		jgl = map_jgl_file(filename, &num);
 
-		if (midi_open(client, port) < 0) {
+		if (midi_open(NAME, addr) < 0) {
 			fprintf(stderr, "error: can't open sequencer\n");
 			return 1;
 		}

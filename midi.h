@@ -2,7 +2,7 @@
 #ifndef __MIDI_H
 #define __MIDI_H
 
-int midi_open		(int, int);
+int midi_open		(char *, char *);
 void midi_close		(void);
 void midi_noteon	(int, int, int);
 void midi_noteoff	(char, int, int);
