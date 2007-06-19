@@ -58,12 +58,14 @@ void usage()
 	printf(
 "Usage: " NAME " [options] [filename]\n"
 "available options:\n"
-"    -a <address>	alsa MIDI device address (default " DEFAULT_ADDR ")\n"
-"    -D			detect synth model\n"
-"    -d <device id>	MIDI device ID (default 0x10)\n"
-"    -h			show short description and exit\n"
-"    -l			list patches in librarian file\n"
-"    -s <patch num>	send temporary patch to Juno-G\n"
+"    -a --address id	ALSA sequencer MIDI device address (default "
+			DEFAULT_ADDR ")\n"
+"    -D --detect	Detect synth model\n"
+"    -d --device id	MIDI device ID (default 0x10)\n"
+"    -h	--help		Show short description and exit\n"
+"    -l	--list		List patches in librarian file\n"
+"    -s --send num	Send temporary patch to Juno-G\n"
+"    -V --version	Print version information\n"
 	);
 }
 
@@ -73,9 +75,9 @@ static struct option lopt[] = {
 	{ "detect",		0, 0, 'D' },
 	{ "device",		1, 0, 'd' },
 	{ "help",		0, 0, 'h' },
-	{ "version",            0, 0, 'V' },
 	{ "list",		0, 0, 'l' },
 	{ "send",		1, 0, 's' },
+	{ "version",            0, 0, 'V' },
 };
 
 int main(int argc, char **argv)
