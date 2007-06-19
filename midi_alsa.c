@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <string.h>
 #include <alsa/asoundlib.h>
 
 #include "common.h"
@@ -25,16 +26,14 @@ static void midi_send(snd_seq_event_t *ev, int d)
 static int midi_recv(int len, uint8 *ptr)
 {
 	snd_seq_event_t *ev;
-	int n, i;
+	int n, err;
 
-	n = 0;
-	do {
-		i = snd_seq_event_input(seq, &ev);
-        	n += snd_midi_event_decode(mev, ptr, len, ev);
-		ptr += i;
-		len -= i;
-        	snd_seq_free_event(ev);
-	} while (i > 0);
+	if ((err = snd_seq_event_input(seq, &ev)) < 0) {
+		fprintf(stderr, "snd_seq_event_input: %s\n", strerror(err));
+		return -1;
+	}
+        n = snd_midi_event_decode(mev, ptr, len, ev);
+        snd_seq_free_event(ev);
 
         return n;
 }
