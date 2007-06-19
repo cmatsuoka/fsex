@@ -6,6 +6,17 @@ but should work with little changes with other Roland devices using the XV
 engine such as the XV-5080 or Fantom.
 
 
+Kernel patch
+============
+
+Linux kernels 2.6.21 and earlier (at least) require a patch written by
+Alexandre Jousset to properly recognize the Juno-G. See doc/alsa-junog.patch
+for further information.
+
+
+ALSA MIDI client
+================
+
 Certain operations require the ALSA MIDI port address where the synthesizer
 is connected in client:port format. The address can be obtained using the
 "aconnect" utility:
@@ -16,7 +27,7 @@ client 14: 'Midi Through' [type=kernel]
 client 20: 'Juno-G' [type=kernel]
     0 'Juno-G MIDI 1   '
 
-In this case the address of the Juno-G MIDI port is 20:0
+In this case the address of the Juno-G MIDI port is 20:0 or Juno-G:0
 
 
 Listing patches from a .jgl file

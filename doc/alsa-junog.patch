@@ -1,0 +1,17 @@
+--- alsa-driver-1.0.14rc2.orig/sound/usb/usbquirks.h    2007-01-15 14:25:30.000000000 +0100
++++ alsa-driver-1.0.14rc2/sound/usb/usbquirks.h 2007-03-05 15:35:44.000000000 +0100
+@@ -242,0 +243,13 @@
++{ /* Roland Juno-G */
++	USB_DEVICE(0x582, 0x00a6),
++	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
++		.vendor_name = "Roland",
++		.product_name = "Juno-G",
++		.ifnum = 0,
++		.type = QUIRK_MIDI_FIXED_ENDPOINT,
++		.data = & (const struct snd_usb_midi_endpoint_info) {
++			.out_cables = 0x0001,
++			.in_cables  = 0x0001
++		}
++	}
++},
+
