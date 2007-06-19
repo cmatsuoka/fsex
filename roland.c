@@ -20,7 +20,7 @@ int checksum(int len, uint8 *data)
 	return 0x80 - acc;
 }
 
-void send_sysex(int addr, int len, uint8 *data)
+void send_sysex(uint32 addr, int len, uint8 *data)
 {
 	static uint8 buf[550];
 	int sum;
@@ -36,6 +36,11 @@ void send_sysex(int addr, int len, uint8 *data)
 	buf[i++] = 0x00;	/* Juno-G ID */
 	buf[i++] = 0x15;	/* Juno-G ID */
 	buf[i++] = 0x12;	/* Command ID (DT1) */
+
+	buf[i++] = (addr & 0xff000000) >> 24;
+	buf[i++] = (addr & 0x00ff0000) >> 16;
+	buf[i++] = (addr & 0x0000ff00) >> 8;
+	buf[i++] = (addr & 0x000000ff);
 	
 	memcpy(buf + i, data, len);
 	i += len;
