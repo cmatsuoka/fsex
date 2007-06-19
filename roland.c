@@ -34,7 +34,7 @@ void send_sysex(int dev_id, uint32 addr, int len, uint8 *data)
 	i = 0;
 	buf[i++] = MIDI_CMD_COMMON_SYSEX;
 	buf[i++] = 0x41;	/* Roland ID */
-	buf[i++] = dev_id;	/* Device ID (FIXME: user-assignable) */
+	buf[i++] = dev_id;	/* Device ID */
 	buf[i++] = 0x00;	/* Juno-G ID (FIXME: allow other devices) */
 	buf[i++] = 0x00;	/* Juno-G ID */
 	buf[i++] = 0x15;	/* Juno-G ID */
