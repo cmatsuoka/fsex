@@ -7,6 +7,10 @@ engine such as the XV-5080 or Fantom.
 
 gsex should be renamed to fsex after support to Fantom is added.
 
+Get the latest version using:
+
+	$ git clone http://helllabs.org/git/fsex.git
+
 
 Kernel patch
 ============
