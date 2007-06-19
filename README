@@ -37,7 +37,9 @@ gsex can be used to list the contents of a .jgl file. To do so, run it
 with the -l parameter:
 
 $ gsex -l xv_collection.jgl
-Checking library file... Juno-G librarian file
+File format   : Juno-G librarian file
+Num of patches: 1024
+
 Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 Waveform 3 Waveform 4
 ----- ---- ------------- -- ----- ---------- ---------- ---------- ----------
 0001  PNO  Standard Pno  P  -2--  (unset)    JD Piano A (unset)    (unset)
@@ -45,8 +47,6 @@ Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 Waveform 3 Waveform 4
 0003  PNO  Classique     P  12--  Ac.Pno f A JD Piano A (unset)    (unset)
 0004  PNO  Nice Piano    P  1-34  JD Piano A JD Piano A JD Piano B Piano Atk
 0005  PNO  Piano Thang   P  123-  JD Piano A MKS Piano  JD Piano A (unset)
-0006  PNO  Power Grand   P  1-34  JD Piano A (unset)    JD Piano C MKS Piano
-0007  TEK  House Piano   P  12--  JD Piano B 3rd Perc O (unset)    (unset)
 ...
 
 

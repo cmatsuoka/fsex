@@ -39,6 +39,7 @@ int check_lib(struct xv_libdata *lib)
 	switch(lib->model) {
 	case MODEL_JUNOG:
 	case MODEL_FANTOMX:
+	case MODEL_FANTOMS:
 		blksz = blksz_jg;
 		break;
 	default:
@@ -73,6 +74,7 @@ void list_patches(struct xv_libdata *lib)
 
 	data = lib->data;
 
+	printf("\n");
 	printf("Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 "
 			"Waveform 3 Waveform 4\n");
 	printf("----- ---- ------------- -- ----- ---------- ---------- "
@@ -138,6 +140,7 @@ void list_patches(struct xv_libdata *lib)
 					printf(" %-10.10s", junog_wave[n]);
 					break;
 				case MODEL_FANTOMX:
+				case MODEL_FANTOMS:
 					printf(" %-10.10s", fantom_wave[n]);
 					break;
 				default:

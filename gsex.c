@@ -20,11 +20,15 @@ int map_lib_file(char *filename, struct xv_libdata *lib)
 	}
 
 	lib->model = MODEL_NONE;
-	printf("Checking library file... ");
+	printf("File format   : ");
 
 	if (!memcmp(lib->data, "JunoGLibrarianFile0000", 22)) {
 		printf("Juno-G librarian file\n");
 		lib->model = MODEL_JUNOG;
+		lib->data += 160;
+	} else if (!memcmp(lib->data,"FantomSLibrarianFile0000", 24)) {
+		printf("Fantom-S librarian file\n");
+		lib->model = MODEL_FANTOMS;
 		lib->data += 160;
 	} else if (!memcmp(lib->data,"FantomXLibrarianFile0000", 24)) {
 		printf("Fantom-X librarian file\n");
@@ -40,6 +44,8 @@ int map_lib_file(char *filename, struct xv_libdata *lib)
 		printf("data seems to be corrupted\n");
 		exit(1);
 	}
+
+	printf("Num of patches: %d\n", lib->num);
 
 	return 0;
 }
