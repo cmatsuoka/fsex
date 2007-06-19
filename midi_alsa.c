@@ -6,6 +6,7 @@
 #include "midi.h"
 
 static snd_seq_t *seq;
+static snd_midi_event_t *mev;
 static int my_client, my_port;
 static int dest_client, dest_port;
 
@@ -21,12 +22,16 @@ static void midi_send(snd_seq_event_t *ev, int d)
 	snd_seq_drain_output(seq);
 }
 
-static void midi_recv(snd_seq_event_t *ev)
+static int midi_recv(int len, uint8 *ptr)
 {
-	snd_seq_ev_set_direct(ev);
-	snd_seq_ev_set_source(ev, my_port);
-	snd_seq_ev_set_dest(ev, dest_client, dest_port);
-        snd_seq_event_input(seq, &ev);
+	snd_seq_event_t *ev;
+	int n;
+
+	snd_seq_event_input(seq, &ev);
+        n = snd_midi_event_decode(mev, ptr, len, ev);
+        snd_seq_free_event(ev);
+
+        return n;
 }
 
 int midi_open(char *name, char *addr)
@@ -42,6 +47,9 @@ int midi_open(char *name, char *addr)
 
 	_D(_D_INFO "My address %d:%d", my_client, my_port);
 
+	if (snd_midi_event_new(512, &mev))
+		return -3;
+	
 	my_client = snd_seq_client_id(seq);
 	snd_seq_set_client_name(seq, name);
 
@@ -127,7 +135,7 @@ void midi_bend(int ch, int val)
 	midi_send(&ev, 1);
 }
 
-void midi_sysex(int len, void *ptr)
+void midi_sysex_send(int len, void *ptr)
 {
 	snd_seq_event_t ev;
 
@@ -135,3 +143,7 @@ void midi_sysex(int len, void *ptr)
 	midi_send(&ev, 1);
 }
 
+int midi_sysex_recv(int len, void *ptr)
+{
+	return midi_recv(len, ptr);
+}

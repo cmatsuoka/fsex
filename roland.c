@@ -55,35 +55,11 @@ void send_sysex(uint32 addr, int len, uint8 *data)
 	buf[i++] = sum;
 	buf[i++] = MIDI_CMD_COMMON_SYSEX_END;
 
-	midi_sysex(i, buf);
-
+	midi_sysex_send(i, buf);
 }
 
-void recv_sysex(uint32 addr, int len, uint8 *data)
+int recv_sysex(int len, uint8 *data)
 {
-	static uint8 buf[550];
-	int sum;
-	int i;
-
-	assert(len < 500);
-
-	i = 0;
-	buf[i++] = MIDI_CMD_COMMON_SYSEX;
-	buf[i++] = 0x41;	/* Roland ID */
-	buf[i++] = 0x10;	/* Device ID (FIXME: user-assignable) */
-	buf[i++] = 0x00;	/* Juno-G ID (FIXME: allow other devices) */
-	buf[i++] = 0x00;	/* Juno-G ID */
-	buf[i++] = 0x15;	/* Juno-G ID */
-	buf[i++] = 0x11;	/* Command ID (RQ1) */
-	
-	memcpy(buf + i, data, len);
-	i += len;
-
-	sum = checksum(i - 2, data + 2);
-
-	buf[i++] = sum;
-	buf[i++] = MIDI_CMD_COMMON_SYSEX_END;
-
-	midi_sysex(i, buf);
+	return midi_sysex_recv(len, data);
 }
 

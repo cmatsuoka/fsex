@@ -10,6 +10,7 @@ void midi_bank		(int, int, int);
 void midi_pgm		(int, int);
 void midi_ctl		(int, int, int);
 void midi_bend		(int, int);
-void midi_sysex		(int, void *);
+void midi_sysex_send	(int, void *);
+int midi_sysex_recv	(int, void *);
 
 #endif

@@ -208,6 +208,6 @@ extern char *junog_wave[];
 
 int checksum	(int, uint8 *);
 void send_sysex	(uint32, int, uint8 *);
-void recv_sysex	(uint32, int, uint8 *);
+int recv_sysex	(int, uint8 *);
 
 #endif
