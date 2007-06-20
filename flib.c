@@ -11,7 +11,7 @@
 
 #define NAME "flib"
 
-void set_list_flags(struct fsex_libdata *lib, char *list, uint32 flag)
+static void set_list_flags(struct fsex_libdata *lib, char *list, uint32 flag)
 {
 	char *token;
 
@@ -38,7 +38,7 @@ void set_list_flags(struct fsex_libdata *lib, char *list, uint32 flag)
 	}
 }
 
-void usage()
+static void usage()
 {
 	printf(
 "Usage: " NAME " [options] [library]\n"
@@ -67,10 +67,12 @@ int main(int argc, char **argv)
 	int o, optidx, opt_list;
 	char *filename;
 	char *opt_extract, *opt_delete;
+	char *outfile;
 	struct fsex_libdata lib;
 
 	opt_list = 0;
 	opt_extract = opt_delete = NULL;
+	outfile = "output";
 	filename = NULL;
 
 	while ((o = getopt_long(argc, argv, OPTIONS, lopt, &optidx)) > 0) {
@@ -86,6 +88,9 @@ int main(int argc, char **argv)
 			exit(0);
 		case 'l':
 			opt_list = 1;
+			break;
+		case 'o':
+			outfile = optarg;
 			break;
 		case 'V':
 			printf(NAME " " VERSION "\n");
@@ -105,6 +110,7 @@ int main(int argc, char **argv)
 		}
 		map_lib_file(filename, &lib);
 		set_list_flags(&lib, opt_extract, FSEX_FLAG_EXTRACT);
+		extract_patch(&lib, outfile);
 		exit(0);
 	}
 

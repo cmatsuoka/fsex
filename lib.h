@@ -5,6 +5,6 @@
 #include "library.h"
 
 void	list_patches    (struct fsex_libdata *);
-void	extract_patch	(struct fsex_libdata *);
+int	extract_patch	(struct fsex_libdata *, char *);
 
 #endif

@@ -13,7 +13,7 @@
 #define DEFAULT_ADDR "20:0"
 
 
-void usage()
+static void usage()
 {
 	printf(
 "Usage: " NAME " [options] [filename]\n"

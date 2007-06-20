@@ -87,10 +87,18 @@ void list_patches(struct fsex_libdata *lib)
 	}
 }
 
-void extract_patch(struct fsex_libdata *lib)
+int extract_patch(struct fsex_libdata *lib, char *output)
 {
-	int i;
+	int i, fd;
+
+	fd = create_libfile(lib, output);
 
 	for (i = 0; i < lib->num; i++) {
+		if (lib->patch[i].flags & FSEX_FLAG_EXTRACT)
+			write_patch(fd, &lib->patch[i]);
 	}
+
+	close_libfile(fd);
+
+	return 0;
 }

@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "common.h"
 #include "xv.h"
@@ -151,3 +155,45 @@ int check_lib(struct fsex_libdata *lib)
 	return count;
 }
 
+int create_libfile(struct fsex_libdata *lib, char *filename)
+{
+	int fd;
+	char *str, c = 0;
+
+	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	if (fd < 0) {
+		perror("error");
+		return -1;
+	}
+
+	switch(lib->model) {
+	case MODEL_JUNOG:
+		str = "JunoGLibrarianFile0000          ";
+		break;
+	case MODEL_FANTOMX:
+		str = "FantomXLibrarianFile0000        ";
+		break;
+	case MODEL_FANTOMS:
+		str = "FantomSLibrarianFile0000        ";
+		break;
+	default:
+		fprintf(stderr, "error: unsupported library format\n");
+		exit(1);
+	}
+
+	write(fd, str, 32);
+	lseek(fd, 159, SEEK_SET);
+	write(fd, &c, 1);
+
+	return fd;
+}
+
+void close_libfile(int fd)
+{
+	close(fd);
+}
+
+int write_patch(int fd, struct fsex_patch *p)
+{
+	return 0;
+}
