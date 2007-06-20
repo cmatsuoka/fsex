@@ -6,25 +6,26 @@ CC	= gcc
 CFLAGS	= -O0 -g -Wall -DVERSION=\"$(VERSION)\"
 LD	= gcc
 LDFLAGS	=
-OBJS	= common.o library.o category.o roland.o midi_alsa.o junog_waves.o \
-	  fantom_waves.o manufacturer.o gsex.o
+SEX_OBJ	= common.o library.o category.o sex.o manufacturer.o roland.o \
+	  midi_alsa.o fsex.o
+LIB_OBJ	= common.o library.o category.o lib.o junog_waves.o fantom_waves.o \
+	  xv5080_waves.o flib.o
+OBJS	= $(SEX_OBJ) $(LIB_OBJ)
 DFILES	= Makefile README TODO common.h midi.h xv.h
-LIBS	= -lasound
 
 .c.o:
 	$(CC) -c $(CFLAGS) -o $*.o $<
 
-all: gsex
+all: fsex flib
 
-gsex: $(OBJS)
-	$(LD) -o$@ $(LDFLAGS) $+ $(LIBS)
+fsex: $(SEX_OBJ)
+	$(LD) -o$@ $(LDFLAGS) $+ -lasound
+
+flib: $(LIB_OBJ)
+	$(LD) -o$@ $(LDFLAGS) $+
 
 clean:
-	rm -f core *.o *~ depend gsex
-
-depend:
-	@echo Building dependencies...
-	@$(CC) $(CFLAGS) -M $(OBJS:.o=.c) >$@
+	rm -f core *.o *~ depend fsex flib
 
 $(OBJS): Makefile
 
@@ -37,5 +38,8 @@ dist:
 	@rm -Rf $(PKG)
 	@ls -l $(PKG).tar.gz
 	
-	
+depend:
+	@echo Building dependencies...
+	@$(CC) $(CFLAGS) -M $(OBJS:.o=.c) >$@
+
 include depend

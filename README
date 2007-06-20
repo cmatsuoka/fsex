@@ -1,15 +1,19 @@
 
-gsex (from Juno-G SysEx) is a small program to send patches to the Roland
-Juno-G, written to avoid rebooting to Windows every time I want to upload
-patches from a .jgl file to the synthesizer. It is currently Juno-G specific,
-but should work with little changes with other Roland devices using the XV
-engine such as the XV-5080 or Fantom.
+fsex (from Fantom SysEx, previously gsex from Juno-G SysEx) is a set of
+utilities to manipulate libraries and send patches to the Fantom, Juno-G
+and other XV-based Roland synths, written to avoid rebooting to Windows
+every time I want to upload patches from a librarian file to the synthesizer.
 
-gsex should be renamed to fsex after support to Fantom is added.
+The name is inspired by the Virus SysEX dump utility, vsex.
+
+**Note**: fsex is currently under development and was only tested with the
+Juno-G, but should work with minor changes with other devices.
 
 Get the latest version using:
 
 	$ git clone http://helllabs.org/git/fsex.git
+
+Send comments and patches to cmatsuoka@gmail.com
 
 
 Kernel patch
@@ -39,10 +43,10 @@ In this case the address of the Juno-G MIDI port is 20:0 or Juno-G:0
 Listing patches from a .jgl file
 ================================
 
-gsex can be used to list the contents of a .jgl file. To do so, run it
-with the -l parameter:
+flib can be used to list the contents of a .jgl/fxl/fsl file. To do so, run
+it with the -l parameter:
 
-$ gsex -l xv_collection.jgl
+$ flib -l xv_collection.jgl
 File format: Juno-G librarian file
 Num patches: 1024
 
@@ -59,9 +63,10 @@ Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 Waveform 3 Waveform 4
 Sending a patch via SysEx
 =========================
 
-You can send a patch from a .jgl file to the Juno-G using the -s parameter:
+You can send a patch from a .jgl file to the Juno-G with fsex using the -s
+parameter:
 
-$ gsex -a 20:0 -s 538 xv_collection.jgl
+$ fsex -a 20:0 -s 538 xv_collection.jgl
 File format: Juno-G librarian file
 Num patches: 1024
 Send to MIDI address 20:0
@@ -71,12 +76,12 @@ Send patch 0538: PhazeWahClav (KEY)
 Request identification
 ======================
 
-gsex sends a identification request SysEx message if invoked with -D. This
+fsex sends a identification request SysEx message if invoked with -D. This
 can be used later to issue a warning if the user attempts to send data from
 a library made for a different model. Currently family and model numbers
 are displayed as hex (it should be changed to a more descriptive text later).
 
-$ gsex -D
+$ fsex -D
 Send to MIDI address 20:0
 Identification reply
  Device Id     : 10
