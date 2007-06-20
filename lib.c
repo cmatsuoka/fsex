@@ -87,3 +87,10 @@ void list_patches(struct fsex_libdata *lib)
 	}
 }
 
+void extract_patch(struct fsex_libdata *lib)
+{
+	int i;
+
+	for (i = 0; i < lib->num; i++) {
+	}
+}
