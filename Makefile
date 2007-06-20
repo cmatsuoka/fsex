@@ -7,7 +7,7 @@ CFLAGS	= -O0 -g -Wall -DVERSION=\"$(VERSION)\"
 LD	= gcc
 LDFLAGS	=
 OBJS	= common.o library.o category.o roland.o midi_alsa.o junog_waves.o \
-	  fantom_waves.o gsex.o
+	  fantom_waves.o manufacturer.o gsex.o
 DFILES	= Makefile README TODO common.h midi.h xv.h
 LIBS	= -lasound
 

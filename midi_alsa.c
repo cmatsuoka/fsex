@@ -41,7 +41,7 @@ static int midi_recv(int len, uint8 *ptr)
 int midi_open(char *name, char *addr)
 {
 	snd_seq_addr_t d;
-	int caps;
+	int err;
 
 	if (snd_seq_open(&seq, "default", SND_SEQ_OPEN_DUPLEX, 0) < 0)
 		return -1;
@@ -58,17 +58,14 @@ int midi_open(char *name, char *addr)
 	my_client = snd_seq_client_id(seq);
 	snd_seq_set_client_name(seq, name);
 
-	caps = SND_SEQ_PORT_CAP_READ | SND_SEQ_PORT_CAP_WRITE;
-	if (my_client == SND_SEQ_ADDRESS_SUBSCRIBERS) {
-		caps |= SND_SEQ_PORT_CAP_SUBS_READ;
-		caps |= SND_SEQ_PORT_CAP_SUBS_WRITE;
-	}
-
-	my_port = snd_seq_create_simple_port(seq, name, caps,
-		SND_SEQ_PORT_TYPE_APPLICATION);
+	my_port = snd_seq_create_simple_port(seq, name,
+		SND_SEQ_PORT_CAP_DUPLEX |
+			SND_SEQ_PORT_CAP_READ | SND_SEQ_PORT_CAP_SUBS_READ |
+			SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE,
+		SND_SEQ_PORT_TYPE_MIDI_GENERIC | SND_SEQ_PORT_TYPE_APPLICATION);
 
 	if (my_port < 0) {
-		fprintf(stderr, "error: can't create port\n");
+		fprintf(stderr, "can't create port\n");
 		snd_seq_close(seq);
 		return -1;
 	}
@@ -76,13 +73,20 @@ int midi_open(char *name, char *addr)
 	_D(_D_INFO "My address %d:%d", my_client, my_port);
 	printf("Send to MIDI address %d:%d\n", dest_client, dest_port);
 
-	if (dest_client != SND_SEQ_ADDRESS_SUBSCRIBERS) {
-                if (snd_seq_connect_to(seq, my_port, dest_client, dest_port) < 0) {
-			fprintf(stderr, "error: can't subscribe to MIDI port"
-					" (%d:%d)\n", dest_client, dest_port);
-                        snd_seq_close(seq);
-                        return -1;
-                }
+	err = snd_seq_connect_to(seq, my_port, dest_client, dest_port);
+	if (err < 0) {
+		fprintf(stderr, "Can't connect to %d:%d (%s)\n",
+				dest_client, dest_port, strerror(-err));
+		snd_seq_close(seq);
+		return -1;
+        }
+
+	err = snd_seq_connect_from(seq, my_port, dest_client, dest_port);
+	if (err < 0) {
+		fprintf(stderr, "Can't connect from %d:%d (%s)\n",
+				dest_client, dest_port, strerror(-err));
+		snd_seq_close(seq);
+		return -1;
         }
 
 	return 0;

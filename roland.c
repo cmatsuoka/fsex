@@ -8,6 +8,8 @@
 #include "midi.h"
 #include "xv.h"
 
+extern char *manufacturer[];
+
 int checksum(int len, uint8 *data)
 {
 	int i, acc;
@@ -80,8 +82,26 @@ void sysex_get_id(int dev_id)
 	midi_sysex_send(i, buf);
 	len = midi_sysex_recv(500, buf);
 
-	for (i = 0; i < len; i++) {
-		printf(" %02x", buf[i]);
+	/* Juno-G 1.06 replies f0 7e 10 06 02 41 15 02 00 00 00 03 00 00 f7 */
+
+	if (buf[0]!=0xf0 || buf[1]!=0x7e || buf[3]!=0x06 || buf[4]!=0x02) {
+		printf("Error\n");
+		return;
 	}
-	printf("\n");
+	
+	printf("Identification reply\n");
+	printf(" Device Id     : %02x\n", buf[2]);
+
+	printf(" Manufacturer  : ");
+	if (buf[5] > 0x45 || !manufacturer[buf[5]])
+		printf("%02x (unknown)\n", buf[5]);
+	else if (buf[5] == 0x7d)
+		printf("educational/development\n");
+	else
+		printf("%s\n", manufacturer[buf[5]]);
+
+	printf(" Family number : %02x %02x\n", buf[6], buf[7]);
+	printf(" Model number  : %02x %02x\n", buf[8], buf[9]);
+	printf(" Version       : %02x %02x %02x %02x\n",
+			buf[10], buf[11], buf[12], buf[13]);
 }
