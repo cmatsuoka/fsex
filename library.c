@@ -31,12 +31,14 @@ static int blksz_jg[] = {
 
 
 
-void load_patches(struct fsex_libdata *lib, struct fsex_patch *p)
+void load_patches(struct fsex_libdata *lib)
 {
 	uint8 *patch, *data;
+	struct fsex_patch *p;
 	int i, size;
 
 	data = lib->data;
+	p = lib->patch;
 
 	for (i = 0; i < lib->num; i++) {
 		size = val32_be(data);
@@ -93,11 +95,19 @@ int map_lib_file(char *filename, struct fsex_libdata *lib)
 
 	lib->num = check_lib(lib);
 	if (lib->num < 0) {
-		printf("data seems to be corrupted\n");
+		fprintf(stderr, "data seems to be corrupted\n");
 		exit(1);
 	}
 
 	printf("Num patches: %d\n", lib->num);
+
+	lib->patch = malloc(lib->num * sizeof(struct fsex_patch));
+	if (lib->patch == NULL) {
+		perror("error");
+		exit(1);
+	}
+
+	load_patches(lib);
 
 	return 0;
 }

@@ -33,12 +33,13 @@ struct fsex_category {
 struct fsex_libdata {
 	int model;
 	int num;
+	struct fsex_patch *patch;
 	uint8 *data;
 };
 
 extern struct fsex_category patch_category[];
 
 int	map_lib_file	(char *, struct fsex_libdata *);
-int     check_lib       (struct fsex_libdata *);
+int	check_lib       (struct fsex_libdata *);
 
 #endif
