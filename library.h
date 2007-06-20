@@ -8,6 +8,7 @@ struct fsex_patch {
 	unsigned long flags;
 #define FSEX_FLAG_EXTRACT	(1L << 0)
 #define FSEX_FLAG_DELETE	(1L << 1);
+	int size;
 	int common_size;
 	int mfx_size;
 	int chorus_size;
@@ -17,6 +18,7 @@ struct fsex_patch {
 	int tone2_size;
 	int tone3_size;
 	int tone4_size;
+	uint8 *patch;
 	uint8 *common;
 	uint8 *mfx;
 	uint8 *chorus;

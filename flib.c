@@ -31,8 +31,8 @@ static void set_list_flags(struct fsex_libdata *lib, char *list, uint32 flag)
 		}
 
 		for (; b >= a; b--) {
-			if (b <= lib->num)
-				lib->patch[b].flags |= flag;
+			if (b > 0 && b <= lib->num)
+				lib->patch[b - 1].flags |= flag;
 		}
 		token = strtok (NULL, ",");
 	}

@@ -49,6 +49,18 @@ int write32_le(int fd, uint32 val)
 	return 4;
 }
 
+int write32_be(int fd, uint32 val)
+{
+	uint8 x;
+
+        x = (val & 0xff000000) >> 24; write(fd, &x, 1);
+        x = (val & 0x00ff0000) >> 16; write(fd, &x, 1);
+        x = (val & 0x0000ff00) >> 8; write(fd, &x, 1);
+        x = (val & 0x000000ff) >> 0; write(fd, &x, 1);
+
+	return 4;
+}
+
 int write16_le(int fd, uint16 val)
 {
 	uint8 x;

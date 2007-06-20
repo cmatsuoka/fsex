@@ -16,6 +16,7 @@ int32 val24_le(uint8 *);
 int16 val16_le(uint8 *);
 int write32_le(int, uint32);
 int write16_le(int, uint16);
+int write32_be(int, uint32);
 
 int suffix(char *, char *);
 int has_suffix(char *);

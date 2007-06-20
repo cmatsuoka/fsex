@@ -39,16 +39,17 @@ void load_patches(struct fsex_libdata *lib)
 {
 	uint8 *patch, *data;
 	struct fsex_patch *p;
-	int i, size;
+	int i;
 
 	data = lib->data;
 	p = lib->patch;
 
 	for (i = 0; i < lib->num; i++) {
-		size = val32_be(data);
+		p[i].size = val32_be(data);
+		p[i].patch = data;
 		data += 4;
 		patch = data;
-		data += size;
+		data += p[i].size;
 
 #define STORE(x) do { \
 		p[i].x##_size = val32_be(patch); \
@@ -195,5 +196,10 @@ void close_libfile(int fd)
 
 int write_patch(int fd, struct fsex_patch *p)
 {
-	return 0;
+	int ret;
+
+	ret = (write(fd, p->patch, p->size) == p->size);
+	ret |= (write32_be(fd, 0) == 4); /* FIXME: comment field */
+
+	return ret;
 }
