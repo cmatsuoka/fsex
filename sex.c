@@ -107,7 +107,7 @@ void sysex_get_id(int dev_id)
 			buf[10], buf[11], buf[12], buf[13]);
 }
 
-void send_patch(struct xv_libdata *lib, int num, int dev_id)
+void send_patch(struct fsex_libdata *lib, int num, int dev_id)
 {
 	uint8 *patch, *data;
 	int i, size, len;

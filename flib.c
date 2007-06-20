@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 {
 	int o, optidx, opt_list;
 	char *filename;
-	struct xv_libdata lib;
+	struct fsex_libdata lib;
 
 	opt_list = 0;
 	filename = NULL;

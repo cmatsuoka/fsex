@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 {
 	int o, optidx, opt_send, opt_detect;
 	char *filename, *addr;
-	struct xv_libdata lib;
+	struct fsex_libdata lib;
 	int dev_id;
 
 	addr = DEFAULT_ADDR;

@@ -30,7 +30,40 @@ static int blksz_jg[] = {
 };
 
 
-int map_lib_file(char *filename, struct xv_libdata *lib)
+
+void load_patches(struct fsex_libdata *lib, struct fsex_patch *p)
+{
+	uint8 *patch, *data;
+	int i, size;
+
+	data = lib->data;
+
+	for (i = 0; i < lib->num; i++) {
+		size = val32_be(data);
+		data += 4;
+		patch = data;
+		data += size;
+
+#define STORE(x) do { \
+		p[i].x##_size = val32_be(patch); \
+		patch += 4; \
+		memcpy(p[i].x, patch, p[i].x##_size); \
+		patch += p[i].x##_size; \
+	} while (0)
+
+		STORE(common);
+		STORE(mfx);
+		STORE(chorus);
+		STORE(reverb);
+		STORE(tmt);
+		STORE(tone1);
+		STORE(tone2);
+		STORE(tone3);
+		STORE(tone4);
+	}
+}
+
+int map_lib_file(char *filename, struct fsex_libdata *lib)
 {
 	lib->data = mapfile(filename);
 	if (lib->data == NULL) {
@@ -69,7 +102,7 @@ int map_lib_file(char *filename, struct xv_libdata *lib)
 	return 0;
 }
 
-int check_lib(struct xv_libdata *lib)
+int check_lib(struct fsex_libdata *lib)
 {
 	uint8 *data, *patch;
 	int i, count, size, len;

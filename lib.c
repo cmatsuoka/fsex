@@ -1,9 +1,13 @@
 
 #include <stdio.h>
+#include <string.h>
 
 #include "xv.h"
+#include "library.h"
+#include "lib.h"
 
-void list_patches(struct xv_libdata *lib)
+
+void list_patches(struct fsex_libdata *lib)
 {
 	uint8 *patch, *data;
 	int i, count, size, len;

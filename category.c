@@ -1,7 +1,7 @@
 
-#include "xv.h"
+#include "library.h"
 
-struct xv_patch_category patch_category[] = {
+struct fsex_category patch_category[] = {
 	{ "---", "No assign" },
 	{ "PNO", "Acoustic Piano" },
 	{ "EP ", "Electric Piano" },

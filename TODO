@@ -3,8 +3,6 @@
 * Test in synths other than Juno-G
 * Check how data other than patches are stored in lib files
 * Handle other data types
-* Rename gsex to something else after support to other synths are
-  implemented
 * Display better device detection information (family, model, etc)
 * Verify if model is correct before sending data (with -f override)
 

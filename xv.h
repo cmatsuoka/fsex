@@ -119,7 +119,6 @@ enum xv_patch_common {
 enum xv_patch_common_mfx {
 	MFX_TYPE			= 0x0000,
 };
-
 #define PATCH_COMMON_MFX_SIZE_JG	0x0111
 #define PATCH_COMMON_MFX_SIZE_XV	0x0111
 
@@ -198,18 +197,6 @@ enum xv_patch_tone {
 
 #define DATA_SIZE(x) (((x)>0x7f)?(0x80+((x)&0xff)):(x))
 
-struct xv_patch_category {
-	char *short_name;
-	char *long_name;
-};
-
-struct xv_libdata {
-	int model;
-	int num;
-	uint8 *data;
-};
-
-extern struct xv_patch_category patch_category[];
 extern char *xv5080_wave[];
 extern char *fantom_wave[];
 extern char *fantomx_wave[];
