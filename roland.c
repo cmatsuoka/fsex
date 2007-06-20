@@ -71,7 +71,7 @@ void sysex_get_id(int dev_id)
 	
 	i = 0;
 	buf[i++] = MIDI_CMD_COMMON_SYSEX;
-	buf[i++] = 0x7e;	/* ID number */
+	buf[i++] = 0x7e;	/* Non-realtime */
 	buf[i++] = dev_id;	/* Device ID */
 	buf[i++] = 0x06;	/* Sub ID#1 (General information) */
 	buf[i++] = 0x01;	/* Sub ID#2 (Identity request) */
