@@ -67,3 +67,21 @@ Num patches: 1024
 Send to MIDI address 20:0
 Send patch 0538: PhazeWahClav (KEY)
 
+
+Request identification
+======================
+
+gsex sends a identification request SysEx message if invoked with -D. This
+can be used later to issue a warning if the user attempts to send data from
+a library made for a different model. Currently family and model numbers
+are displayed as hex (it should be changed to a more descriptive text later).
+
+$ gsex -D
+Send to MIDI address 20:0
+Identification reply
+ Device Id     : 10
+ Manufacturer  : Roland
+ Family number : 15 02
+ Model number  : 00 00
+ Version       : 00 03 00 00
+
