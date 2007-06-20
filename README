@@ -20,8 +20,11 @@ Kernel patch
 ============
 
 Linux kernels 2.6.21 and earlier (at least) require a patch written by
-Alexandre Jousset to properly recognize the Juno-G. See doc/alsa-junog.patch
-for further information.
+Alexandre Jousset to properly recognize the Juno-G. See alsa-junog.patch
+for further information. Apply it with:
+
+# cd /usr/src/linux-${version}
+# patch -p1 < alsa-junog.patch
 
 
 ALSA MIDI client

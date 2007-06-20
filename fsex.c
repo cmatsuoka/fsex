@@ -6,6 +6,8 @@
 #include "common.h"
 #include "midi.h"
 #include "xv.h"
+#include "library.h"
+#include "sex.h"
 
 #define NAME "fsex"
 #define DEFAULT_ADDR "20:0"
@@ -16,11 +18,10 @@ void usage()
 	printf(
 "Usage: " NAME " [options] [filename]\n"
 "available options:\n"
-"    -a --address id	ALSA sequencer MIDI device address (default "
-			DEFAULT_ADDR ")\n"
-"    -D --detect	Detect synth model\n"
+"    -a --address port	ALSA sequencer port (default " DEFAULT_ADDR ")\n"
+"    -D --detect		Detect synth model\n"
 "    -d --device id	MIDI device ID (default 0x10)\n"
-"    -h	--help		Show short description and exit\n"
+"    -h --help		Show short description and exit\n"
 "    -s --send num	Send temporary patch to Juno-G\n"
 "    -V --version	Print version information\n"
 	);

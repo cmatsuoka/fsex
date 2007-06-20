@@ -1,6 +1,6 @@
 
-#ifndef __COMMON_H
-#define __COMMON_H
+#ifndef __FSEX_COMMON_H
+#define __FSEX_COMMON_H
 
 typedef unsigned int uint32;
 typedef unsigned short uint16;

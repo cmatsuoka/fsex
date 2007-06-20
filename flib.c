@@ -5,6 +5,8 @@
 
 #include "common.h"
 #include "xv.h"
+#include "library.h"
+#include "lib.h"
 
 #define NAME "flib"
 
@@ -14,7 +16,7 @@ void usage()
 	printf(
 "Usage: " NAME " [options] [filename]\n"
 "available options:\n"
-"    -h	--help		Show short description and exit\n"
+"    -h --help		Show short description and exit\n"
 "    -l	--list		List patches in librarian file\n"
 "    -V --version	Print version information\n"
 	);

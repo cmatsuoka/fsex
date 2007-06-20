@@ -1,6 +1,6 @@
 
-#ifndef __MIDI_H
-#define __MIDI_H
+#ifndef __FSEX_MIDI_H
+#define __FSEX_MIDI_H
 
 int midi_open		(char *, char *);
 void midi_close		(void);

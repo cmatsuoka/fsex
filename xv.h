@@ -1,6 +1,6 @@
 
-#ifndef __XV_MAP_H
-#define __XV_MAP_H
+#ifndef __FSEX_XV_H
+#define __FSEX_XV_H
 
 #include "common.h"
 
@@ -214,13 +214,5 @@ extern char *xv5080_wave[];
 extern char *fantom_wave[];
 extern char *fantomx_wave[];
 extern char *junog_wave[];
-
-int	checksum	(int, uint8 *);
-void	send_sysex	(int, uint32, int, uint8 *);
-int	recv_sysex	(int, uint8 *);
-void	sysex_get_id	(int);
-int     check_lib       (struct xv_libdata *);
-void	list_patches    (struct xv_libdata *);
-void	send_patch	(struct xv_libdata *, int, int);
 
 #endif

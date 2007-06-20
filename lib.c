@@ -1,4 +1,6 @@
 
+#include <stdio.h>
+
 #include "xv.h"
 
 void list_patches(struct xv_libdata *lib)

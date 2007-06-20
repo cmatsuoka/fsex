@@ -5,6 +5,7 @@
 
 #include "common.h"
 #include "xv.h"
+#include "library.h"
 
 
 #define CHECK_SIZE(x,y) do {\

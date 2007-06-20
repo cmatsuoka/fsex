@@ -1,0 +1,44 @@
+.TH "FSEX" "1" "Version 0\&.1" "Jun 2007" "Fantom Utilities" 
+.PP 
+.SH "NAME" 
+fsex - Fantom SysEx Utility
+.PP 
+.SH "SYNOPSIS" 
+\fBfsex\fP
+[\fB-a, --address\fP \fIport\fP]
+[\fB-D, --detect\fP]
+[\fB-d, --device\fP \fIid\fP]
+[\fB-h, --help\fP]
+[\fB-s, --send\fP \fInum\fP]
+[\fB-V, --version\fP]
+.PP 
+.SH "DESCRIPTION" 
+\fBfsex\fP is a utility to send and retrieve data from the Fantom\&,
+Juno-G and other Roland synthesizers based on the XV engine\&.
+.PP 
+.SH "OPTIONS" 
+.IP "\fB-a, --address\fP \fIport\fP" 
+Set the ALSA MIDI port where the synthesizer is connected\&. It can be
+specified in either numeric (20:0) or name (Juno-G:0) forms\&. The
+default port is 20\&:0\&.
+.IP "\fB-D, --detect\fP" 
+Send a identification request SysEx message and display the identification
+reply\&.
+.IP "\fB-h, --help\fP" 
+Show a short summary of command-line options\&.
+.IP "\fB-s, --send\fP \fInum\fP" 
+Send the specified patch in the librarian file to the synthesizer.
+.IP "\fB-V, --version\fP" 
+Print version information\&.
+.PP 
+.SH "EXAMPLES" 
+Send the first patch from a JGL file to the Juno-G:
+.IP "" 
+\f(CWgsex -a Juno-G:0 -s 1 Sineshine.jgl\fP
+.PP 
+.SH "BUGS" 
+Certainly we have some, but we don't know yet what they are\&.
+.PP 
+.SH "AUTHOR" 
+Claudio Matsuoka\&.
+.PP 
