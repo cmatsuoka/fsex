@@ -11,7 +11,7 @@ LIB_OBJ	= common.o library.o category.o lib.o junog_waves.o fantom_waves.o \
 	  xv5080_waves.o flib.o
 OBJS	= $(SEX_OBJ) $(LIB_OBJ)
 DFILES	= Makefile README TODO common.h midi.h xv.h library.h lib.h sex.h \
-	  alsa-junog.patch
+	  fsex.1 alsa-junog.patch
 
 .c.o:
 	$(CC) -c $(CFLAGS) -o $*.o $<
