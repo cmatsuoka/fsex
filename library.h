@@ -14,15 +14,15 @@ struct fsex_patch {
 	int tone2_size;
 	int tone3_size;
 	int tone4_size;
-	uint8 common[0x60];
-	uint8 mfx[0x120];
-	uint8 chorus[0x60];
-	uint8 reverb[0x60];
-	uint8 tmt[0x40];
-	uint8 tone1[0x120];
-	uint8 tone2[0x120];
-	uint8 tone3[0x120];
-	uint8 tone4[0x120];
+	uint8 *common;
+	uint8 *mfx;
+	uint8 *chorus;
+	uint8 *reverb;
+	uint8 *tmt;
+	uint8 *tone1;
+	uint8 *tone2;
+	uint8 *tone3;
+	uint8 *tone4;
 };
 
 struct fsex_category {

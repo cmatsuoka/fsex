@@ -49,7 +49,7 @@ void load_patches(struct fsex_libdata *lib)
 #define STORE(x) do { \
 		p[i].x##_size = val32_be(patch); \
 		patch += 4; \
-		memcpy(p[i].x, patch, p[i].x##_size); \
+		p[i].x = patch; \
 		patch += p[i].x##_size; \
 	} while (0)
 
