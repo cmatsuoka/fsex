@@ -43,7 +43,7 @@ int midi_open(char *name, char *addr)
 	snd_seq_addr_t d;
 	int caps;
 
-	if (snd_seq_open(&seq, "hw", SND_SEQ_OPEN_DUPLEX, 0) < 0)
+	if (snd_seq_open(&seq, "default", SND_SEQ_OPEN_DUPLEX, 0) < 0)
 		return -1;
 
 	if (snd_seq_parse_address(seq, &d, addr) < 0)
@@ -58,12 +58,14 @@ int midi_open(char *name, char *addr)
 	my_client = snd_seq_client_id(seq);
 	snd_seq_set_client_name(seq, name);
 
-	caps = SND_SEQ_PORT_CAP_READ;
-	if (my_client == SND_SEQ_ADDRESS_SUBSCRIBERS)
+	caps = SND_SEQ_PORT_CAP_READ | SND_SEQ_PORT_CAP_WRITE;
+	if (my_client == SND_SEQ_ADDRESS_SUBSCRIBERS) {
 		caps |= SND_SEQ_PORT_CAP_SUBS_READ;
+		caps |= SND_SEQ_PORT_CAP_SUBS_WRITE;
+	}
 
 	my_port = snd_seq_create_simple_port(seq, name, caps,
-		SND_SEQ_PORT_TYPE_MIDI_GENERIC | SND_SEQ_PORT_TYPE_APPLICATION);
+		SND_SEQ_PORT_TYPE_APPLICATION);
 
 	if (my_port < 0) {
 		fprintf(stderr, "error: can't create port\n");
