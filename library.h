@@ -46,7 +46,7 @@ extern struct fsex_category patch_category[];
 int	map_lib_file	(char *, struct fsex_libdata *);
 int	check_lib       (struct fsex_libdata *);
 int	create_libfile	(struct fsex_libdata *, char *);
-void	close_libfile	(int);
+void	close_libfile	(int, int);
 int	write_patch	(int, struct fsex_patch *);
 
 

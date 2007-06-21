@@ -90,59 +90,32 @@ void list_patches(struct fsex_libdata *lib)
 	}
 }
 
-#if 0
-int delete_patch(struct fsex_libdata *lib, struct fsex_libdata *mlib, char *output)
+int extract_patch(struct fsex_libdata *lib, int num, char *output)
 {
-	int i, fd;
+	int i, j, fd, count;
+	uint8 *p;
 
 	fd = create_libfile(lib, output);
 
-	printf("Delete patch from %s:", lib->filename);
-	for (i = 0; i < lib->num; i++) {
-		if (~lib->patch[i].flags & FSEX_FLAG_DELETE) {
-			write_patch(fd, &lib->patch[i]);
-		} else {
-			printf(" %d", i + 1);
+	count = 0;
+	for (j = 0; j < num; j++) {
+		printf("\nExtract patch from %s:\n", lib[j].filename);
+		for (i = 0; i < lib[j].num; i++) {
+			if (lib[j].patch[i].skip)
+				continue;
+
+			write_patch(fd, &lib[j].patch[i]);
+			p = lib[j].patch[i].common;
+			printf("%04d  %s  %-12.12s\n", i + 1,
+				patch_category[p[PATCH_CATEGORY]].short_name,
+				&p[PATCH_NAME_1]);
+			count++;
 		}
 	}
-	printf("\n");
 
-	if (mlib) {
-		printf("Merge with %s (%d patches)\n",
-					mlib->filename, mlib->num);
-		for (i = 0; i < mlib->num; i++)
-			write_patch(fd, &mlib->patch[i]);
-	}
+	printf("\nCreate new library: %s\n", output);
 
-	close_libfile(fd);
+	close_libfile(fd, count);
 
 	return 0;
 }
-
-int extract_patch(struct fsex_libdata *lib, struct fsex_libdata *mlib, char *output)
-{
-	int i, fd;
-
-	fd = create_libfile(lib, output);
-
-	printf("Extract patch from %s:", lib->filename);
-	for (i = 0; i < lib->num; i++) {
-		if (lib->patch[i].flags & FSEX_FLAG_EXTRACT) {
-			write_patch(fd, &lib->patch[i]);
-			printf(" %d", i + 1);
-		}
-	}
-	printf("\n");
-
-	if (mlib) {
-		printf("Merge with %s (%d patches)\n",
-					mlib->filename, mlib->num);
-		for (i = 0; i < mlib->num; i++)
-			write_patch(fd, &mlib->patch[i]);
-	}
-
-	close_libfile(fd);
-
-	return 0;
-}
-#endif

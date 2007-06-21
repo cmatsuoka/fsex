@@ -5,12 +5,10 @@ fsex - Fantom SysEx Utility
 .PP 
 .SH "SYNOPSIS" 
 \fBfsex\fP
-[\fB-d, --delete\fP \fIlist\fP]
-[\fB-e, --extract\fP \fIlist\fP]
-[\fB-l, --list\fP]
-[\fB-h, --help\fP]
-[\fB-o, --output\fP \fIname\fP]
-[\fB-V, --version\fP]
+[options]
+[action]
+[input files]
+[output file]
 .PP 
 .SH "DESCRIPTION" 
 \fBflib\fP is a utility to manage data from the librarian program of Fantom\&,
@@ -18,24 +16,26 @@ Juno-G and other Roland synthesizers based on the XV engine\&. Currently
 supported formats are .jgl, .fxl and .fsl.
 .PP 
 .SH "OPTIONS" 
-.IP "\fB-d, --delete\fP \fIlist\fP"
-Delete the listed patches from the library and write a new library
-file specified with the -o option\&. \fIlist\fP is a comma-separated list of
-patch numbers and ranges\&. Example: 1,3-5,20-25\&.
-.IP "\fB-e, --extract\fP \fIlist\fP"
-Extract the listed patches from the library and write to a new library
-file specified with the -o option\&. See parameter -d for information
-on \fIlist\fP format.
+.IP "\fB-q, --quiet\fP" 
+Don't print messages to stdout\&.
+.PP
+.SH "ACTION"
+.IP "\fB-e, --extract\fP"
+Extract the listed patches from the input files and write to the output
+file\&. See section FILE FORMAT below for the file format specification\&.
 .IP "\fB-l, --list\fP" 
-List patches from librarian file.
-reply\&.
+List patches from the input files\&.
 .IP "\fB-h, --help\fP" 
 Show a short summary of command-line options\&.
 .IP "\fB-V, --version\fP" 
 Print version information\&.
-.IP "\fB-o, --output\fP \fIname\fP"
-Set the output file name when using -d or -e.
 .PP 
+.SH "FILE FORMAT" 
+The input files can be specified in a `filename:patch_list' format where
+\fIpatch_list\fP is a comma-separated list of numeric ranges\&. An optional
+`!' can be used at the beginning of \fIpatch_list\fP to invert the list\&.
+If no patch list is specified, all patches in \fIfilename\fP are selected\&.
+.PP
 .SH "EXAMPLES" 
 List patches in a Juno-G JGL file:
 .IP "" 
@@ -44,12 +44,12 @@ List patches in a Juno-G JGL file:
 Create a new library called New.jgl containing patches 2, 4, 5 and 6
 from Sineshine.jgl:
 .IP "" 
-\f(CWflib -e 2,4-6 -o New.jgl Sineshine.jgl\fP
+\f(CWflib -e Sineshine.jgl:2,4-6 New.jgl\fP
 .PP 
-Create a new library called New.jgl containing all patches in
-XV_Collection.jgl except the first one:
+Create a new library called New.jgl containing the first patch from
+Sineshine.jgl plus all patches in XV_Collection.jgl except the first one:
 .IP "" 
-\f(CWflib -d 1 -o New.jgl XV_Collection.jgl\fP
+\f(CWflib -e Sineshine.jgl:1 XV_Collection.jgl:!1 New.jgl\fP
 .PP 
 .SH "BUGS" 
 Certainly we have some, but we don't know where they are\&. Please report

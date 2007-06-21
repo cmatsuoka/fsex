@@ -59,19 +59,21 @@ Listing patches from a librarian file
 =====================================
 
 flib can be used to list the contents of a .jgl/fxl/fsl file. To do so, run
-it with the -l parameter:
+it with the -l parameter. The list of patches to show can be specified, the
+default is to show all patches
 
-$ flib -l XV_Collection.jgl
-* XV_Collection: Juno-G librarian file (1024 patches)
+$ flib -l XV_Collection.jgl:1,42,350-352
+* XV_Collection.jgl: Juno-G librarian file (1024 patches)
+
+Patches from XV_Collection.jgl:
 
 Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 Waveform 3 Waveform 4
 ----- ---- ------------- -- ----- ---------- ---------- ---------- ----------
 0001  PNO  Standard Pno  P  -2--  (unset)    JD Piano A (unset)    (unset)
-0002  PNO  Bright Piano  P  -2--  (unset)    JD Piano A (unset)    (unset)
-0003  PNO  Classique     P  12--  Ac.Pno f A JD Piano A (unset)    (unset)
-0004  PNO  Nice Piano    P  1-34  JD Piano A JD Piano A JD Piano B Piano Atk
-0005  PNO  Piano Thang   P  123-  JD Piano A MKS Piano  JD Piano A (unset)
-...
+0042  KEY  Clavicembalo  P  1234  Reg.Clav A Reg.Clav C Reg.Clav C Reg.Clav C
+0350  PLS  Albion        P  12--  Female Ahs Female Oos (unset)    (unset)
+0351  PLS  Running Pad   P  1234  TinyBellWa SBF Vox A  D-50 Bell  Warm Pad A
+0352  PLS  Stepped Pad   P  1234  Super Saw  Super Saw  JD Fine Wi SBF Vox A
 
 
 Extracting, deleting and merging patches
@@ -80,31 +82,33 @@ Extracting, deleting and merging patches
 flib can manipulate librarian files in different ways such as splitting a
 library or merging data from different libraries.
 
-$ flib -e 1-3,200 -o New.jgl XV_Collection.jgl
+$ flib -e XV_Collection.jgl:1,3 Sineshine.jgl:!1,2,6-16 New.jgl
 * XV_Collection.jgl: Juno-G librarian file (1024 patches)
-Extract patch from XV_Collection.jgl: 1 2 3 200
-
-$ flib -d 1,5-15 -o New2.jgl Sineshine.jgl
 * Sineshine.jgl: Juno-G librarian file (16 patches)
-Delete patch from Sineshine.jgl: 1 5 6 7 8 9 10 11 12 13 14 15
 
-$ flib -e 1,3 -o New3.jgl -m New2.jgl New.jgl
-* New2.jgl: Juno-G librarian file (4 patches)
-* New.jgl: Juno-G librarian file (4 patches)
-Extract patch from New.jgl: 1 3
-Merge with New2.jgl (4 patches)
+Extract patch from XV_Collection.jgl:
+0001  PNO  Standard Pno
+0003  PNO  Classique
 
-$ flib -l New3.jgl
-* New3.jgl: Juno-G librarian file (6 patches)
+Extract patch from Sineshine.jgl:
+0003  SBS  Vintage Bs 1
+0004  PLS  VocoBassline
+0005  BTS  OldschoolHip
+
+Create new library: New.jgl
+
+$ flib -l New.jgl
+* New.jgl: Juno-G librarian file (5 patches)
+
+Patches from New.jgl:
 
 Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 Waveform 3 Waveform 4
 ----- ---- ------------- -- ----- ---------- ---------- ---------- ----------
 0001  PNO  Standard Pno  P  -2--  (unset)    JD Piano A (unset)    (unset)
 0002  PNO  Classique     P  12--  Ac.Pno f A JD Piano A (unset)    (unset)
-0003  SPD  Sine Pad      P  1234  ARP Sine H CalcSIN2   CalcSIN2   CalcSIN2
-0004  SBS  Vintage Bs 1  m  12--  Juno Sqr H Juno Saw H Juno Saw H Juno Saw H
-0005  PLS  VocoBassline  m  1234  Juno Saw H Juno Saw H Juno Saw H Juno Saw H
-0006  ORG  Club B        P  1234  CalcSIN2   CalcSIN2   CalcSIN2   ARP Sine H
+0003  SBS  Vintage Bs 1  m  12--  Juno Sqr H Juno Saw H Juno Saw H Juno Saw H
+0004  PLS  VocoBassline  m  1234  Juno Saw H Juno Saw H Juno Saw H Juno Saw H
+0005  BTS  OldschoolHip  m  1234  106 Bs56   Super Saw  Sine       White Nois
 
 
 -----------------------------[ fsex examples ]-------------------------------

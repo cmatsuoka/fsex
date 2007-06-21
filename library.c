@@ -84,24 +84,24 @@ int map_lib_file(char *filename, struct fsex_libdata *lib)
 	lib->filename = filename;
 	printf("* %s: ", filename);
 
-	if (!memcmp(lib->data, "JunoGLibrarianFile0000", 22)) {
+	if (!memcmp(lib->data, "JunoGLibrarianFile0000          ", 32)) {
 		idstr = "Juno-G librarian file";
 		lib->model = MODEL_JUNOG;
-	} else if (!memcmp(lib->data,"FantomSLibrarianFile0000", 24)) {
+	} else if (!memcmp(lib->data,"FantomSLibrarianFile0000        ", 32)) {
 		idstr = "Fantom-S librarian file";
 		lib->model = MODEL_FANTOMS;
-	} else if (!memcmp(lib->data,"FantomXLibrarianFile0000", 24)) {
+	} else if (!memcmp(lib->data,"FantomXLibrarianFile0000        ", 32)) {
 		idstr = "Fantom-X librarian file";
 		lib->model = MODEL_FANTOMX;
 	} else {
 		printf("unknown\n");
 		exit(1);
 	}
+	lib->data += 32;
+	lib->num = val32_be(lib->data);
+	lib->data += 128;
 
-	lib->data += 160;
-
-	lib->num = check_lib(lib);
-	if (lib->num < 0) {
+	if (check_lib(lib) < 0) {
 		fprintf(stderr, "data seems to be corrupted\n");
 		exit(1);
 	}
@@ -122,7 +122,7 @@ int map_lib_file(char *filename, struct fsex_libdata *lib)
 int check_lib(struct fsex_libdata *lib)
 {
 	uint8 *data, *patch;
-	int i, count, size, len;
+	int i, j, size, len;
 	int *blksz;
 
 	data = lib->data;
@@ -137,7 +137,7 @@ int check_lib(struct fsex_libdata *lib)
 		return -1;
 	}
 
-	for (count = 0; ; count++) {
+	for (j = 0; j < lib->num; j++) {
 		size = val32_be(data);
 		data += 4;
 		patch = data;
@@ -155,7 +155,7 @@ int check_lib(struct fsex_libdata *lib)
 		}
 	}
 
-	return count;
+	return j;
 }
 
 int create_libfile(struct fsex_libdata *lib, char *filename)
@@ -191,8 +191,10 @@ int create_libfile(struct fsex_libdata *lib, char *filename)
 	return fd;
 }
 
-void close_libfile(int fd)
+void close_libfile(int fd, int count)
 {
+	lseek(fd, 32, SEEK_SET);
+	write32_be(fd, count);
 	close(fd);
 }
 

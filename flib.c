@@ -153,26 +153,12 @@ int main(int argc, char **argv)
 		}
 		break;
 	case 'e':
+		extract_patch(lib_in, num_in, file_out);
 		break;
 	default:
 		fprintf(stderr, NAME ": unknown action\n");
 		exit(1);
 	}
-#if 0
-	if (opt_delete) {
-		map_lib_file(filename, &lib);
-		set_list_flags(&lib, opt_delete, FSEX_FLAG_DELETE);
-		delete_patch(&lib, mergefile ? &mlib : NULL, outfile);
-		exit(0);
-	}
-
-	if (opt_list) {
-		map_lib_file(filename, &lib);
-		list_patches(&lib);
-		exit(0);
-	}
-#endif
-
 
 	return 0;
 }
