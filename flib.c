@@ -1,4 +1,5 @@
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,9 +41,25 @@ static void set_list_flag(struct fsex_libdata *lib, char *list)
 	token = strtok(list, ",");
 	while (token) {
 		int a, b;
-		char buf[40];
+		char buf[40], cat[4];
 
-		if (strchr(token, '-')) {
+		if (isalpha(*token)) {
+			a = 1;	/* don't run the skip setting loop below */
+			b = 0;
+
+			_D(_D_INFO "token = \"%s\"", token);
+			cat[0] = token[0];
+			cat[1] = token[1];
+			cat[2] = token[2] ? token[2] : ' ';
+			cat[3] = 0;
+
+			for (i = 0; i < lib->num; i++) {
+				int cnum = lib->patch[i].common[PATCH_CATEGORY];
+				if (strncmp(patch_category[cnum].short_name, cat, 3))
+					continue;
+				lib->patch[i].skip = negate;
+			}
+		} else if (strchr(token, '-')) {
 			b = strcspn (token, "-");
 			strncpy(buf, token, b);
 			a = strtoul(buf, NULL, 0);

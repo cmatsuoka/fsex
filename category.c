@@ -1,4 +1,6 @@
 
+#include <stdlib.h>
+
 #include "library.h"
 
 struct fsex_category patch_category[] = {
@@ -41,5 +43,6 @@ struct fsex_category patch_category[] = {
 	{ "BTS", "Beat&Groove" },
 	{ "DRM", "Drums" },
 	{ "CMB", "Combination" },
+	{ NULL, NULL },
 };
 

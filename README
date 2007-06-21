@@ -60,7 +60,7 @@ Listing patches from a librarian file
 
 flib can be used to list the contents of a .jgl/fxl/fsl file. To do so, run
 it with the -l parameter. The list of patches to show can be specified, the
-default is to show all patches
+default is to show all patches.
 
 $ flib -l XV_Collection.jgl:1,42,350-352
 * XV_Collection.jgl: Juno-G librarian file (1024 patches)
@@ -74,6 +74,26 @@ Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 Waveform 3 Waveform 4
 0350  PLS  Albion        P  12--  Female Ahs Female Oos (unset)    (unset)
 0351  PLS  Running Pad   P  1234  TinyBellWa SBF Vox A  D-50 Bell  Warm Pad A
 0352  PLS  Stepped Pad   P  1234  Super Saw  Super Saw  JD Fine Wi SBF Vox A
+
+
+You can also specify categories in the patch list, e.g. list only Combination
+and Beat&Groove patches.
+
+$ flib -l XV_Collection.jgl:CMB,BTS
+* xv_collection.jgl: Juno-G librarian file (1024 patches)
+
+Patches from XV_Collection.jgl:
+
+Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 Waveform 3 Waveform 4
+----- ---- ------------- -- ----- ---------- ---------- ---------- ----------
+0013  CMB  Bs/Pno+Brs    P  1234  Ac.Pno f A Finger Bs  Slap +Pull Tp Section
+0117  CMB  Lounge Gig    P  1-34  Clean TC A (unset)    Fretlss Sf Flute B
+0250  CMB  Hillbillys    P  1234  Harmonica  Violin A   Banjo C    Ac.Bass C
+0500  CMB  Blue Notes    P  1234  Ac.Bass C  Wide Sax B Wide Sax C Ride Cymba
+0728  CMB  Suite Combo   P  1234  Jazz Doos  Female Oos Fretlss Sf Vibraphone
+1022  BTS  TempoMadness  P  1234  TR909 Kick TR808 CHH  TR909 Clap TR909 Kick
+1023  CMB  GenerationXV  P  1234  Warm Pad A Dyno EP mp Car Pass   E.Gtr Harm
+1024  CMB  Wedding Gig   P  1234  SA E.Piano Fretlss Sf Nylon Gtr2 Full Str A
 
 
 Extracting, deleting and merging patches

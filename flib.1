@@ -36,9 +36,10 @@ Print version information\&.
 .PP 
 .SH "FILE FORMAT" 
 The input files can be specified in a `filename:patch_list' format where
-\fIpatch_list\fP is a comma-separated list of numeric ranges\&. An optional
-`!' can be used at the beginning of \fIpatch_list\fP to invert the list\&.
-If no patch list is specified, all patches in \fIfilename\fP are selected\&.
+\fIpatch_list\fP is a comma-separated list of numeric ranges or patch
+categories\&. An optional `!' can be used at the beginning of \fIpatch_list\fP
+to invert the list\&. If no patch list is specified, all patches in
+\fIfilename\fP are selected\&.
 .PP
 .SH "EXAMPLES" 
 List patches in a Juno-G JGL file:
@@ -54,6 +55,11 @@ Create a new library called New.jgl containing the first patch from
 Sineshine.jgl plus all patches in XV_Collection.jgl except the first one:
 .IP "" 
 \f(CWflib -e Sineshine.jgl:1 XV_Collection.jgl:!1 New.jgl\fP
+.PP
+Create a new library file containing all piano and electric piano patches
+from XV_Collection.jgl:
+.IP "" 
+\f(CWflib -e XV_Collection.jgl:PNO,EP New.jgl\fP
 .PP 
 .SH "BUGS" 
 Certainly we have some, but we don't know where they are\&. Please report
