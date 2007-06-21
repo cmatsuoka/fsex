@@ -1,4 +1,5 @@
 
+* Retrieve patches from synth
 * Generalize code to handle synths other than Juno-G
 * Test in synths other than Juno-G
 * Check how data other than patches are stored in lib files
