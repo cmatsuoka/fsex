@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <getopt.h>
 
 #include "common.h"
@@ -11,9 +15,27 @@
 
 #define NAME "flib"
 
-static void set_list_flags(struct fsex_libdata *lib, char *list, uint32 flag)
+static void parse_spec(char *s, char **fname, char **list)
+{
+	_D(_D_INFO "spec = \"%s\"", s);
+	*fname = strtok(s, ":");
+	*list = strtok(NULL, "");
+	if (*list == NULL) *list = "!";
+	_D(_D_INFO "  fname = \"%s\", list = \"%s\"", *fname, *list);
+}
+
+static void set_list_flag(struct fsex_libdata *lib, char *list)
 {
 	char *token;
+	int i, negate = 0;
+
+	if (*list == '!') {
+		negate = 1;
+		list++;
+	}
+
+	for (i = 0; i < lib->num; i++)
+		lib->patch[i].skip = !negate;
 
 	token = strtok(list, ",");
 	while (token) {
@@ -32,7 +54,7 @@ static void set_list_flags(struct fsex_libdata *lib, char *list, uint32 flag)
 
 		for (; b >= a; b--) {
 			if (b > 0 && b <= lib->num)
-				lib->patch[b - 1].flags |= flag;
+				lib->patch[b - 1].skip = negate;
 		}
 		token = strtok (NULL, ",");
 	}
@@ -41,98 +63,106 @@ static void set_list_flags(struct fsex_libdata *lib, char *list, uint32 flag)
 static void usage()
 {
 	printf(
-"Usage: " NAME " [options] [library]\n"
-"available options:\n"
-"    -a --add list	Set list of patches to merge\n"
-"    -d --delete list	Delete patches from library\n"
-"    -e --extract list	Extract patches from library\n"
+"Usage: " NAME " [options] [action] [input libraries] [output library]\n"
+"\navailable options:\n"
+"    -q --quiet		Set list of patches to merge\n"
+"\navailable actions:\n"
+"    -e --extract	Extract patches from library\n"
 "    -h --help		Show short description and exit\n"
 "    -l --list		List patches in library file\n"
-"    -m --merge name	Merge two library files\n"
-"    -o --output name	Set output filename\n"
 "    -V --version	Print version information\n"
 	);
 }
 
-#define OPTIONS "a:d:e:hlm:o:V"
+#define OPTIONS "ehlqV"
 static struct option lopt[] = {
-	{ "delete",		1, 0, 'd' },
 	{ "extract",		1, 0, 'e' },
 	{ "help",		0, 0, 'h' },
 	{ "list",		0, 0, 'l' },
-	{ "merge",		0, 0, 'm' },
-	{ "output",		1, 0, 'o' },
-	{ "version",            0, 0, 'V' },
+	{ "version",		0, 0, 'V' },
+	{ "quiet",		0, 0, 'q' },
 };
 
 int main(int argc, char **argv)
 {
-	int o, optidx, opt_list;
-	char *filename;
-	char *opt_extract, *opt_delete;
-	char *mergefile;
-	char *outfile;
-	struct fsex_libdata lib, mlib;
+	int i, o, optidx;
+	int action, num_in, num_out;
+	char **file_in, *file_out;
+	struct fsex_libdata *lib_in;
 
-	opt_list = 0;
-	opt_extract = opt_delete = NULL;
-	mergefile = NULL;
-	outfile = "output";
-	filename = NULL;
+	action = 0;
 
 	while ((o = getopt_long(argc, argv, OPTIONS, lopt, &optidx)) > 0) {
 		switch (o) {
-		case 'd':
-			opt_delete = optarg;
-			break;
 		case 'e':
-			opt_extract = optarg;
+		case 'l':
+			action = o;
 			break;
 		case 'h':
 			usage();
 			exit(0);
-		case 'l':
-			opt_list = 1;
-			break;
-		case 'm':
-			mergefile = optarg;
-			break;
-		case 'o':
-			outfile = optarg;
-			break;
 		case 'V':
 			printf(NAME " " VERSION "\n");
 			exit(0);
+		case 'q':
+			dup2(open("/dev/null", O_WRONLY), 1);
+			break;
 		default:
 			exit(1);
 		}
 	}
 
-	if (optind < argc)
-		filename = argv[optind];
+	if (!action) {
+		fprintf(stderr, NAME ": no action specified\n");
+		fprintf(stderr, "Run `" NAME " -h' for more information\n");
+		exit(1);
+	}
 
-	if (opt_delete || opt_extract || opt_list || mergefile) {
-		if (!filename) {
-			fprintf(stderr, "error: library file required\n");
-			exit(1);
+	/* list has no output */
+	num_in = argc - 1 - optind + (action == 'l');
+	num_out = (action == 'e');
+	_D(_D_INFO "num_in = %d, num_out = %d", num_in, num_out);
+
+	lib_in = malloc(num_in * sizeof(struct fsex_libdata));
+	file_in = &argv[optind];
+	if (num_out) file_out = argv[argc - 1];
+
+	if (num_in < 1) {
+		fprintf(stderr, NAME ": input library file name required\n");
+		exit(1);
+	}
+
+	if (num_out != 1 && action == 'e') {
+		fprintf(stderr, NAME ": output library file name required\n");
+		exit(1);
+	}
+
+	for (i = 0; i < num_in; i++) {
+		char *fname, *spec;
+		_D(_D_WARN "file_in[%d] = \"%s\"", i, file_in[i]);
+		parse_spec(file_in[i], &fname, &spec);
+		map_lib_file(fname, &lib_in[i]);
+		set_list_flag(&lib_in[i], spec);
+	}
+
+	switch (action) {
+	case 'l':
+		for (i = 0; i < num_in; i++) {
+			printf("\nPatches from %s:\n", file_in[i]);
+			list_patches(&lib_in[i]);
 		}
+		break;
+	case 'e':
+		break;
+	default:
+		fprintf(stderr, NAME ": unknown action\n");
+		exit(1);
 	}
-
-	if (mergefile) {
-		map_lib_file(mergefile, &mlib);
-	}
-
+#if 0
 	if (opt_delete) {
 		map_lib_file(filename, &lib);
 		set_list_flags(&lib, opt_delete, FSEX_FLAG_DELETE);
 		delete_patch(&lib, mergefile ? &mlib : NULL, outfile);
-		exit(0);
-	}
-
-	if (opt_extract) {
-		map_lib_file(filename, &lib);
-		set_list_flags(&lib, opt_extract, FSEX_FLAG_EXTRACT);
-		extract_patch(&lib, mergefile ? &mlib : NULL, outfile);
 		exit(0);
 	}
 
@@ -141,9 +171,8 @@ int main(int argc, char **argv)
 		list_patches(&lib);
 		exit(0);
 	}
+#endif
 
-	fprintf(stderr, NAME ": no action specified\n");
-	fprintf(stderr, "Run `" NAME " -h' for more information\n");
 
 	return 0;
 }

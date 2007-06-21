@@ -45,6 +45,9 @@ void list_patches(struct fsex_libdata *lib)
 			"---------- ----------\n");
 
 	for (i = 0; i < lib->num; i++) {
+		if (lib->patch[i].skip)
+			continue;
+
 		/* Patch Common */
 		patch = lib->patch[i].common;
 		printf("%04d  %s  %-12.12s  %s  ",
@@ -87,6 +90,7 @@ void list_patches(struct fsex_libdata *lib)
 	}
 }
 
+#if 0
 int delete_patch(struct fsex_libdata *lib, struct fsex_libdata *mlib, char *output)
 {
 	int i, fd;
@@ -141,3 +145,4 @@ int extract_patch(struct fsex_libdata *lib, struct fsex_libdata *mlib, char *out
 
 	return 0;
 }
+#endif

@@ -5,9 +5,7 @@
 #include "common.h"
 
 struct fsex_patch {
-	unsigned long flags;
-#define FSEX_FLAG_EXTRACT	(1L << 0)
-#define FSEX_FLAG_DELETE	(1L << 1)
+	int skip;
 	int size;
 	int common_size;
 	int mfx_size;

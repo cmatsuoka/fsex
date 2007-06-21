@@ -3,7 +3,7 @@ NAME	= fsex
 PKG	= $(NAME)-$(VERSION)
 
 CC	= gcc
-CFLAGS	= -O0 -g -Wall -DVERSION=\"$(VERSION)\"
+CFLAGS	= -O0 -g -Wall -DVERSION=\"$(VERSION)\" -D_TRACE
 LD	= gcc
 LDFLAGS	=
 SEX_OBJ	= common.o library.o category.o sex.o manufacturer.o midi_alsa.o fsex.o
