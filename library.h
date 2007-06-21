@@ -42,6 +42,8 @@ struct fsex_libdata {
 };
 
 extern struct fsex_category patch_category[];
+extern int patch_blksz[];
+extern int patch_offset[];
 
 int	map_lib_file	(char *, struct fsex_libdata *);
 int	check_lib       (struct fsex_libdata *);

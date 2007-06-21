@@ -112,28 +112,28 @@ enum xv_patch_common {
 	MATRIX_CTRL_4_DEST_4,
 	MATRIX_CTRL_4_SENS_4,
 };
-#define PATCH_COMMON_SIZE_JG		0x004f
+#define PATCH_COMMON_SIZE		0x004f
 #define PATCH_COMMON_SIZE_XV		0x004f
 
 /* Patch Common MFX */
 enum xv_patch_common_mfx {
 	MFX_TYPE			= 0x0000,
 };
-#define PATCH_COMMON_MFX_SIZE_JG	0x0111
+#define PATCH_COMMON_MFX_SIZE		0x0111
 #define PATCH_COMMON_MFX_SIZE_XV	0x0111
 
 /* Patch Common Chorus */
 enum xv_patch_common_chorus {
 	CHORUS_TYPE			= 0x0000,
 };
-#define PATCH_COMMON_CHORUS_SIZE_JG	0x0054
+#define PATCH_COMMON_CHORUS_SIZE	0x0054
 #define PATCH_COMMON_CHORUS_SIZE_XV	0x0034
 
 /* Patch Common Reverb */
 enum xv_patch_common_reverb {
 	REVERB_TYPE			= 0x0000,
 };
-#define PATCH_COMMON_REVERB_SIZE_JG	0x0053
+#define PATCH_COMMON_REVERB_SIZE	0x0053
 #define PATCH_COMMON_REVERB_SIZE_XV	0x0053
 
 /* Patch TMT */
@@ -180,7 +180,7 @@ enum xv_patch_tmt {
 	TMT4_VEL_FWIDTH_LOWER,
 	TMT4_VEL_FWIDTH_UPPER,
 };
-#define PATCH_TMT_SIZE_JG		0x0029
+#define PATCH_TMT_SIZE			0x0029
 #define PATCH_TMT_SIZE_XV		0x0029
 
 /* Patch Tone */
@@ -192,7 +192,7 @@ enum xv_patch_tone {
 	WAVE_NUMBER_R			= 0x0030,
 	WAVE_GAIN,
 };
-#define PATCH_TONE_SIZE_JG		0x011a
+#define PATCH_TONE_SIZE			0x011a
 #define PATCH_TONE_SIZE_XV		0x0109
 
 #define DATA_SIZE(x) (((x)>0x7f)?(0x80+((x)&0xff)):(x))

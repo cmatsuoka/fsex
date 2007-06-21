@@ -20,19 +20,31 @@
 	} } while (0)
 
 
-static int blksz_jg[] = {
-	PATCH_COMMON_SIZE_JG,
-	PATCH_COMMON_MFX_SIZE_JG,
-	PATCH_COMMON_CHORUS_SIZE_JG,
-	PATCH_COMMON_REVERB_SIZE_JG,
-	PATCH_TMT_SIZE_JG,
-	PATCH_TONE_SIZE_JG,
-	PATCH_TONE_SIZE_JG,
-	PATCH_TONE_SIZE_JG,
-	PATCH_TONE_SIZE_JG,
+int patch_blksz[] = {
+	PATCH_COMMON_SIZE,
+	PATCH_COMMON_MFX_SIZE,
+	PATCH_COMMON_CHORUS_SIZE,
+	PATCH_COMMON_REVERB_SIZE,
+	PATCH_TMT_SIZE,
+	PATCH_TONE_SIZE,
+	PATCH_TONE_SIZE,
+	PATCH_TONE_SIZE,
+	PATCH_TONE_SIZE,
 	-1
 };
 
+int patch_offset[] = {
+	PATCH_COMMON,
+	PATCH_COMMON_MFX,
+	PATCH_COMMON_CHORUS,
+	PATCH_COMMON_REVERB,
+	PATCH_TMT,
+	PATCH_TONE_1,
+	PATCH_TONE_2,
+	PATCH_TONE_3,
+	PATCH_TONE_4,
+	-1
+};
 
 
 void load_patches(struct fsex_libdata *lib)
@@ -131,7 +143,7 @@ int check_lib(struct fsex_libdata *lib)
 	case MODEL_JUNOG:
 	case MODEL_FANTOMX:
 	case MODEL_FANTOMS:
-		blksz = blksz_jg;
+		blksz = patch_blksz;
 		break;
 	default:
 		return -1;

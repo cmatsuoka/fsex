@@ -125,6 +125,12 @@ Send to MIDI address 20:0
 Send patch 0538: PhazeWahClav (KEY)
 
 
+Receibe a patch via SysEx
+=========================
+
+Not implemented yet.
+
+
 Request identification
 ======================
 

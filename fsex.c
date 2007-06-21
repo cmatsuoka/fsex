@@ -22,6 +22,7 @@ static void usage()
 "    -D --detect		Detect synth model\n"
 "    -d --device id	MIDI device ID (default 0x10)\n"
 "    -h --help		Show short description and exit\n"
+"    -r --receive b:n	Retrieve bank b patch n from Juno-G\n"
 "    -s --send num	Send temporary patch to Juno-G\n"
 "    -V --version	Print version information\n"
 	);
@@ -33,6 +34,7 @@ static struct option lopt[] = {
 	{ "detect",		0, 0, 'D' },
 	{ "device",		1, 0, 'd' },
 	{ "help",		0, 0, 'h' },
+	{ "receive",		1, 0, 'r' },
 	{ "send",		1, 0, 's' },
 	{ "version",            0, 0, 'V' },
 };
@@ -63,6 +65,8 @@ int main(int argc, char **argv)
 		case 'h':
 			usage();
 			exit(0);
+		case 'r':
+			break;
 		case 's':
 			opt_send = strtoul(optarg, NULL, 0);
 			break;

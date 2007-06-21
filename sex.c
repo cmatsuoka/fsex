@@ -62,9 +62,42 @@ void send_sysex(int dev_id, uint32 addr, int len, uint8 *data)
 	midi_sysex_send(i, buf);
 }
 
-int recv_sysex(int len, uint8 *data)
+void recv_sysex(int dev_id, uint32 addr, int len, uint8 *data)
 {
-	return midi_sysex_recv(len, data);
+	static uint8 buf[550];
+	int sum, start;
+	int i;
+
+	assert(len < 500);
+
+	i = 0;
+	buf[i++] = MIDI_CMD_COMMON_SYSEX;
+	buf[i++] = 0x41;	/* Roland ID */
+	buf[i++] = dev_id;	/* Device ID */
+	buf[i++] = 0x00;	/* Juno-G ID (FIXME: allow other devices) */
+	buf[i++] = 0x00;	/* Juno-G ID */
+	buf[i++] = 0x15;	/* Juno-G ID */
+	buf[i++] = 0x11;	/* Command ID (RQ1) */
+
+	start = i;
+
+	buf[i++] = (addr & 0xff000000) >> 24;
+	buf[i++] = (addr & 0x00ff0000) >> 16;
+	buf[i++] = (addr & 0x0000ff00) >> 8;
+	buf[i++] = (addr & 0x000000ff);
+	
+	buf[i++] = (len & 0xff000000) >> 24;
+	buf[i++] = (len & 0x00ff0000) >> 16;
+	buf[i++] = (len & 0x0000ff00) >> 8;
+	buf[i++] = (len & 0x000000ff);
+	
+	sum = checksum(len + 4, buf + start);
+
+	buf[i++] = sum;
+	buf[i++] = MIDI_CMD_COMMON_SYSEX_END;
+
+	midi_sysex_send(i, buf);
+	midi_sysex_recv(len, data);
 }
 
 void sysex_get_id(int dev_id)
@@ -107,14 +140,30 @@ void sysex_get_id(int dev_id)
 			buf[10], buf[11], buf[12], buf[13]);
 }
 
+void recv_patch(int num, int dev_id, struct fsex_patch *p)
+{
+	int i, len;
+	uint32 base_addr;
+
+	base_addr = TEMP_PATCH_RHYTHM_PART1 + TEMP_PATCH;
+
+	for (i = 0; patch_offset[i] >= 0; i++) {
+		len = patch_blksz[i];
+		p->patch[0] = (len & 0xff000000) >> 24;
+		p->patch[1] = (len & 0x00ff0000) >> 16;
+		p->patch[2] = (len & 0x0000ff00) >> 8;
+		p->patch[3] = (len & 0x000000ff);
+
+		recv_sysex(dev_id, base_addr + patch_offset[i], len,
+						p->patch + 4);
+	}
+}
+
 void send_patch(struct fsex_libdata *lib, int num, int dev_id)
 {
 	uint8 *patch, *data;
 	int i, size, len;
 	uint32 base_addr;
-	int offset[] = { PATCH_COMMON, PATCH_COMMON_MFX, PATCH_COMMON_CHORUS,
-		PATCH_COMMON_REVERB, PATCH_TMT, PATCH_TONE_1, PATCH_TONE_2,
-		PATCH_TONE_3, PATCH_TONE_4, -1 };
 
 	data = lib->data;
 	
@@ -132,10 +181,10 @@ void send_patch(struct fsex_libdata *lib, int num, int dev_id)
 		num, &patch[4 + PATCH_NAME_1],
 		patch_category[patch[4 + PATCH_CATEGORY]].short_name);
 
-	for (i = 0; offset[i] >= 0; i++) {
+	for (i = 0; patch_offset[i] >= 0; i++) {
 		len = val32_be(patch);
 		patch += 4;
-		send_sysex(dev_id, base_addr + offset[i], len, patch);
+		send_sysex(dev_id, base_addr + patch_offset[i], len, patch);
 		patch += len;
 	}
 }
