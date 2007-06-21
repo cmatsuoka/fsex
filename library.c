@@ -72,6 +72,8 @@ void load_patches(struct fsex_libdata *lib)
 
 int map_lib_file(char *filename, struct fsex_libdata *lib)
 {
+	char *idstr;
+
 	lib->data = mapfile(filename);
 	if (lib->data == NULL) {
 		perror(filename);
@@ -79,24 +81,24 @@ int map_lib_file(char *filename, struct fsex_libdata *lib)
 	}
 
 	lib->model = MODEL_NONE;
-	printf("File format: ");
+	lib->filename = filename;
+	printf("* %s: ", filename);
 
 	if (!memcmp(lib->data, "JunoGLibrarianFile0000", 22)) {
-		printf("Juno-G librarian file\n");
+		idstr = "Juno-G librarian file";
 		lib->model = MODEL_JUNOG;
-		lib->data += 160;
 	} else if (!memcmp(lib->data,"FantomSLibrarianFile0000", 24)) {
-		printf("Fantom-S librarian file\n");
+		idstr = "Fantom-S librarian file";
 		lib->model = MODEL_FANTOMS;
-		lib->data += 160;
 	} else if (!memcmp(lib->data,"FantomXLibrarianFile0000", 24)) {
-		printf("Fantom-X librarian file\n");
+		idstr = "Fantom-X librarian file";
 		lib->model = MODEL_FANTOMX;
-		lib->data += 160;
 	} else {
 		printf("unknown\n");
 		exit(1);
 	}
+
+	lib->data += 160;
 
 	lib->num = check_lib(lib);
 	if (lib->num < 0) {
@@ -104,7 +106,7 @@ int map_lib_file(char *filename, struct fsex_libdata *lib)
 		exit(1);
 	}
 
-	printf("Num patches: %d\n", lib->num);
+	printf("%s (%d patches)\n", idstr, lib->num);
 
 	lib->patch = malloc(lib->num * sizeof(struct fsex_patch));
 	if (lib->patch == NULL) {

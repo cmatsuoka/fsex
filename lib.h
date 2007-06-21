@@ -5,6 +5,7 @@
 #include "library.h"
 
 void	list_patches    (struct fsex_libdata *);
-int	extract_patch	(struct fsex_libdata *, char *);
+int	delete_patch	(struct fsex_libdata *, struct fsex_libdata *, char *);
+int	extract_patch	(struct fsex_libdata *, struct fsex_libdata *, char *);
 
 #endif

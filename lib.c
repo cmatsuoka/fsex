@@ -87,15 +87,54 @@ void list_patches(struct fsex_libdata *lib)
 	}
 }
 
-int extract_patch(struct fsex_libdata *lib, char *output)
+int delete_patch(struct fsex_libdata *lib, struct fsex_libdata *mlib, char *output)
 {
 	int i, fd;
 
 	fd = create_libfile(lib, output);
 
+	printf("Delete patch from %s:", lib->filename);
 	for (i = 0; i < lib->num; i++) {
-		if (lib->patch[i].flags & FSEX_FLAG_EXTRACT)
+		if (~lib->patch[i].flags & FSEX_FLAG_DELETE) {
 			write_patch(fd, &lib->patch[i]);
+		} else {
+			printf(" %d", i + 1);
+		}
+	}
+	printf("\n");
+
+	if (mlib) {
+		printf("Merge with %s (%d patches)\n",
+					mlib->filename, mlib->num);
+		for (i = 0; i < mlib->num; i++)
+			write_patch(fd, &mlib->patch[i]);
+	}
+
+	close_libfile(fd);
+
+	return 0;
+}
+
+int extract_patch(struct fsex_libdata *lib, struct fsex_libdata *mlib, char *output)
+{
+	int i, fd;
+
+	fd = create_libfile(lib, output);
+
+	printf("Extract patch from %s:", lib->filename);
+	for (i = 0; i < lib->num; i++) {
+		if (lib->patch[i].flags & FSEX_FLAG_EXTRACT) {
+			write_patch(fd, &lib->patch[i]);
+			printf(" %d", i + 1);
+		}
+	}
+	printf("\n");
+
+	if (mlib) {
+		printf("Merge with %s (%d patches)\n",
+					mlib->filename, mlib->num);
+		for (i = 0; i < mlib->num; i++)
+			write_patch(fd, &mlib->patch[i]);
 	}
 
 	close_libfile(fd);

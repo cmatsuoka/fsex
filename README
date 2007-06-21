@@ -1,4 +1,14 @@
 
+			    ____
+			   / __/_______  _  __
+			  / /_/ ___/ _ \| |/_/
+			 / __(__  )  __/>  <
+			/_/ /____/\___/_/|_|
+
+
+	*** EXPERIMENTAL, UNTESTED, USE AT YOUR OWN RISK ***
+
+
 fsex (from Fantom SysEx, previously gsex from Juno-G SysEx) is a set of
 utilities to manipulate libraries and send patches to the Fantom, Juno-G
 and other XV-based Roland synths, written to avoid rebooting to Windows
@@ -43,15 +53,16 @@ client 20: 'Juno-G' [type=kernel]
 In this case the address of the Juno-G MIDI port is 20:0 or Juno-G:0
 
 
-Listing patches from a .jgl file
-================================
+-----------------------------[ flib examples ]-------------------------------
+
+Listing patches from a librarian file
+=====================================
 
 flib can be used to list the contents of a .jgl/fxl/fsl file. To do so, run
 it with the -l parameter:
 
-$ flib -l xv_collection.jgl
-File format: Juno-G librarian file
-Num patches: 1024
+$ flib -l XV_Collection.jgl
+* XV_Collection: Juno-G librarian file (1024 patches)
 
 Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 Waveform 3 Waveform 4
 ----- ---- ------------- -- ----- ---------- ---------- ---------- ----------
@@ -63,15 +74,49 @@ Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 Waveform 3 Waveform 4
 ...
 
 
+Extracting, deleting and merging patches
+========================================
+
+flib can manipulate librarian files in different ways such as splitting a
+library or merging data from different libraries.
+
+$ flib -e 1-3,200 -o New.jgl XV_Collection.jgl
+* XV_Collection.jgl: Juno-G librarian file (1024 patches)
+Extract patch from XV_Collection.jgl: 1 2 3 200
+
+$ flib -d 1,5-15 -o New2.jgl Sineshine.jgl
+* Sineshine.jgl: Juno-G librarian file (16 patches)
+Delete patch from Sineshine.jgl: 1 5 6 7 8 9 10 11 12 13 14 15
+
+$ flib -e 1,3 -o New3.jgl -m New2.jgl New.jgl
+* New2.jgl: Juno-G librarian file (4 patches)
+* New.jgl: Juno-G librarian file (4 patches)
+Extract patch from New.jgl: 1 3
+Merge with New2.jgl (4 patches)
+
+$ flib -l New3.jgl
+* New3.jgl: Juno-G librarian file (6 patches)
+
+Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 Waveform 3 Waveform 4
+----- ---- ------------- -- ----- ---------- ---------- ---------- ----------
+0001  PNO  Standard Pno  P  -2--  (unset)    JD Piano A (unset)    (unset)
+0002  PNO  Classique     P  12--  Ac.Pno f A JD Piano A (unset)    (unset)
+0003  SPD  Sine Pad      P  1234  ARP Sine H CalcSIN2   CalcSIN2   CalcSIN2
+0004  SBS  Vintage Bs 1  m  12--  Juno Sqr H Juno Saw H Juno Saw H Juno Saw H
+0005  PLS  VocoBassline  m  1234  Juno Saw H Juno Saw H Juno Saw H Juno Saw H
+0006  ORG  Club B        P  1234  CalcSIN2   CalcSIN2   CalcSIN2   ARP Sine H
+
+
+-----------------------------[ fsex examples ]-------------------------------
+
 Sending a patch via SysEx
 =========================
 
 You can send a patch from a .jgl file to the Juno-G with fsex using the -s
 parameter:
 
-$ fsex -a 20:0 -s 538 xv_collection.jgl
-File format: Juno-G librarian file
-Num patches: 1024
+$ fsex -a 20:0 -s 538 XV_Collection.jgl
+* XV_Collection: Juno-G librarian file (1024 patches)
 Send to MIDI address 20:0
 Send patch 0538: PhazeWahClav (KEY)
 

@@ -7,7 +7,7 @@
 struct fsex_patch {
 	unsigned long flags;
 #define FSEX_FLAG_EXTRACT	(1L << 0)
-#define FSEX_FLAG_DELETE	(1L << 1);
+#define FSEX_FLAG_DELETE	(1L << 1)
 	int size;
 	int common_size;
 	int mfx_size;
@@ -38,6 +38,7 @@ struct fsex_category {
 struct fsex_libdata {
 	int model;
 	int num;
+	char *filename;
 	struct fsex_patch *patch;
 	uint8 *data;
 };

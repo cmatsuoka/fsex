@@ -41,15 +41,22 @@ List patches in a Juno-G JGL file:
 .IP "" 
 \f(CWflib -l Sineshine.jgl\fP
 .PP 
-Extract patches from a JGL file and create a new library:
+Create a new library called New.jgl containing patches 2, 4, 5 and 6
+from Sineshine.jgl:
 .IP "" 
-\f(CWflib -e 2,4-8 -o New.jgl Sineshine.jgl\fP
+\f(CWflib -e 2,4-6 -o New.jgl Sineshine.jgl\fP
+.PP 
+Create a new library called New.jgl containing all patches in
+XV_Collection.jgl except the first one:
+.IP "" 
+\f(CWflib -d 1 -o New.jgl XV_Collection.jgl\fP
 .PP 
 .SH "BUGS" 
-Certainly we have some, but we don't know where they are yet\&.
+Certainly we have some, but we don't know where they are\&. Please report
+any bugs you find\&.
 .PP 
 .SH "AUTHOR" 
-Written by Claudio Matsuoka\&.
+Written by Claudio Matsuoka <cmatsuoka@gmail.com>\&.
 .PP 
 .SH "SEE ALSO" 
 fsex(1)\&, aconnect(1)\&, Roland MIDI implementation
