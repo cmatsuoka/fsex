@@ -67,7 +67,7 @@ $ flib -l XV_Collection.jgl:1,42,350-352
 
 Patches from XV_Collection.jgl:
 
-Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 Waveform 3 Waveform 4
+Pat#  Cat  Patch name   M/P Tone  Waveform 1 Waveform 2 Waveform 3 Waveform 4
 ----- ---- ------------- -- ----- ---------- ---------- ---------- ----------
 0001  PNO  Standard Pno  P  -2--  (unset)    JD Piano A (unset)    (unset)
 0042  KEY  Clavicembalo  P  1234  Reg.Clav A Reg.Clav C Reg.Clav C Reg.Clav C
@@ -145,10 +145,10 @@ Send to MIDI address 20:0
 Send patch 0538: PhazeWahClav (KEY)
 
 
-Receibe a patch via SysEx
+Receive a patch via SysEx
 =========================
 
-Not implemented yet.
+$ fsex -r PR-A:1
 
 
 Request identification

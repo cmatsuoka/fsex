@@ -39,7 +39,7 @@ int list_patches(struct fsex_libdata *lib)
 	data = lib->data;
 
 	printf("\n");
-	printf("Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 "
+	printf("Pat#  Cat  Patch name   M/P Tone  Waveform 1 Waveform 2 "
 			"Waveform 3 Waveform 4\n");
 	printf("----- ---- ------------- -- ----- ---------- ---------- "
 			"---------- ----------\n");
