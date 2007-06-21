@@ -4,7 +4,7 @@
 
 #include "library.h"
 
-void	list_patches    (struct fsex_libdata *);
-int	extract_patch	(struct fsex_libdata *, int, char *);
+int	list_patches    (struct fsex_libdata *);
+int	extract_patch	(struct fsex_libdata *, int, char *, int);
 
 #endif

@@ -16,10 +16,14 @@ Juno-G and other Roland synthesizers based on the XV engine\&. Currently
 supported formats are .jgl, .fxl and .fsl.
 .PP 
 .SH "OPTIONS" 
+The following options can be used when running flib:
+.IP "\fB-f, --force\fP" 
+Force overwrite of existing output files\&.
 .IP "\fB-q, --quiet\fP" 
 Don't print messages to stdout\&.
 .PP
 .SH "ACTION"
+Exactly one of the following actions should be selected when running flib:
 .IP "\fB-e, --extract\fP"
 Extract the listed patches from the input files and write to the output
 file\&. See section FILE FORMAT below for the file format specification\&.

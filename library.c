@@ -170,12 +170,19 @@ int check_lib(struct fsex_libdata *lib)
 	return j;
 }
 
-int create_libfile(struct fsex_libdata *lib, char *filename)
+int create_libfile(struct fsex_libdata *lib, char *filename, int force)
 {
 	int fd;
 	char *str, c = 0;
+	struct stat buf;
 
-	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	if (!force && !stat(filename, &buf)) {
+		fprintf(stderr, "%s already exists, use -f to overwrite\n",
+				filename);
+		return -1;
+	}
+
+	fd = open(filename, O_WRONLY | O_CREAT, 0666);
 	if (fd < 0) {
 		perror("error");
 		return -1;

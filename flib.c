@@ -65,6 +65,7 @@ static void usage()
 	printf(
 "Usage: " NAME " [options] [action] [input libraries] [output library]\n"
 "\navailable options:\n"
+"    -f --force		Force overwrite of an existing library\n"
 "    -q --quiet		Set list of patches to merge\n"
 "\navailable actions:\n"
 "    -e --extract	Extract patches from library\n"
@@ -74,9 +75,10 @@ static void usage()
 	);
 }
 
-#define OPTIONS "ehlqV"
+#define OPTIONS "efhlqV"
 static struct option lopt[] = {
 	{ "extract",		1, 0, 'e' },
+	{ "force",		1, 0, 'f' },
 	{ "help",		0, 0, 'h' },
 	{ "list",		0, 0, 'l' },
 	{ "version",		0, 0, 'V' },
@@ -86,17 +88,21 @@ static struct option lopt[] = {
 int main(int argc, char **argv)
 {
 	int i, o, optidx;
-	int action, num_in, num_out;
+	int action, force, num_in, num_out;
 	char **file_in, *file_out;
 	struct fsex_libdata *lib_in;
+	int err;
 
-	action = 0;
+	action = force = 0;
 
 	while ((o = getopt_long(argc, argv, OPTIONS, lopt, &optidx)) > 0) {
 		switch (o) {
 		case 'e':
 		case 'l':
 			action = o;
+			break;
+		case 'f':
+			force = 1;
 			break;
 		case 'h':
 			usage();
@@ -145,20 +151,24 @@ int main(int argc, char **argv)
 		set_list_flag(&lib_in[i], spec);
 	}
 
+	err = 0;
+
 	switch (action) {
 	case 'l':
 		for (i = 0; i < num_in; i++) {
 			printf("\nPatches from %s:\n", file_in[i]);
-			list_patches(&lib_in[i]);
+			if (list_patches(&lib_in[i]) < 0)
+				err = 1;
 		}
 		break;
 	case 'e':
-		extract_patch(lib_in, num_in, file_out);
+		if (extract_patch(lib_in, num_in, file_out, force) < 0)
+			err = 1;
 		break;
 	default:
 		fprintf(stderr, NAME ": unknown action\n");
-		exit(1);
+		err = 1;
 	}
 
-	return 0;
+	return err;
 }

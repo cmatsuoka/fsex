@@ -31,7 +31,7 @@ static char *waveform_name(int model, int group, int n)
 }
 
 
-void list_patches(struct fsex_libdata *lib)
+int list_patches(struct fsex_libdata *lib)
 {
 	uint8 *patch, *data;
 	int i, n, g;
@@ -88,14 +88,19 @@ void list_patches(struct fsex_libdata *lib)
 		g = patch[WAVE_GROUP_TYPE];
 		printf(" %-10.10s\n", waveform_name(lib->model, g, n));
 	}
+
+	return 0;
 }
 
-int extract_patch(struct fsex_libdata *lib, int num, char *output)
+int extract_patch(struct fsex_libdata *lib, int num, char *output, int force)
 {
 	int i, j, fd, count;
 	uint8 *p;
 
-	fd = create_libfile(lib, output);
+	fd = create_libfile(lib, output, force);
+	if (fd < 0) {
+		return fd;
+	}
 
 	count = 0;
 	for (j = 0; j < num; j++) {

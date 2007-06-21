@@ -47,7 +47,7 @@ extern int patch_offset[];
 
 int	map_lib_file	(char *, struct fsex_libdata *);
 int	check_lib       (struct fsex_libdata *);
-int	create_libfile	(struct fsex_libdata *, char *);
+int	create_libfile	(struct fsex_libdata *, char *, int);
 void	close_libfile	(int, int);
 int	write_patch	(int, struct fsex_patch *);
 
