@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <alsa/asoundef.h>
 #include <assert.h>
@@ -10,6 +11,20 @@
 #include "sex.h"
 
 extern char *manufacturer[];
+
+static struct bank_sel bank[] = {
+	{ "USER",   1, 128, 0x57, 0x00,    0 },
+	{ "USER", 129, 256, 0x57, 0x01, -128 },
+	{ "CARD",   1, 128, 0x57, 0x20,    0 },
+	{ "CARD", 129, 256, 0x57, 0x21, -128 },
+	{ "PR-A",   1, 128, 0x57, 0x40,    0 },
+	{ "PR-B",   1, 128, 0x57, 0x41,    0 },
+	{ "PR-C",   1, 128, 0x57, 0x42,    0 },
+	{ "PR-D",   1, 128, 0x57, 0x43,    0 },
+	{ "PR-E",   1, 128, 0x57, 0x44,    0 },
+	{ "PR-F",   1, 128, 0x57, 0x45,    0 },
+	{ NULL,     0,   0,    0,    0,    0 }
+};
 
 int checksum(int len, uint8 *data)
 {
@@ -140,25 +155,6 @@ void sysex_get_id(int dev_id)
 			buf[10], buf[11], buf[12], buf[13]);
 }
 
-void recv_patch(int num, int dev_id, struct fsex_patch *p)
-{
-	int i, len;
-	uint32 base_addr;
-
-	base_addr = TEMP_PATCH_RHYTHM_PART1 + TEMP_PATCH;
-
-	for (i = 0; patch_offset[i] >= 0; i++) {
-		len = patch_blksz[i];
-		p->patch[0] = (len & 0xff000000) >> 24;
-		p->patch[1] = (len & 0x00ff0000) >> 16;
-		p->patch[2] = (len & 0x0000ff00) >> 8;
-		p->patch[3] = (len & 0x000000ff);
-
-		recv_sysex(dev_id, base_addr + patch_offset[i], len,
-						p->patch + 4);
-	}
-}
-
 void send_patch(struct fsex_libdata *lib, int num, int dev_id)
 {
 	uint8 *patch, *data;
@@ -189,3 +185,42 @@ void send_patch(struct fsex_libdata *lib, int num, int dev_id)
 	}
 }
 
+static int select_patch(char *which, uint8 *msb, uint8 *lsb)
+{
+	char *token, *bank;
+	char buf[20];
+	int num;
+
+	strncpy(buf, which, 20);
+	bank = strtok(buf, ":");
+	num = strtoul(strtok(NULL, ""), NULL, 0);
+
+	printf("bank = %d, num = %d\n", bank, num);
+
+	return -1;
+}
+
+void recv_patch(char *which, int dev_id, struct fsex_patch *p)
+{
+	int i, len;
+	uint32 base_addr;
+	uint8 msb, lsb;
+
+	if (select_patch(which, &msb, &lsb) < 0) {
+		fprintf(stderr, "error: invalid patch %s\n", which);
+		return;
+	}
+
+	base_addr = TEMP_PATCH_RHYTHM_PART1 + TEMP_PATCH;
+
+	for (i = 0; patch_offset[i] >= 0; i++) {
+		len = patch_blksz[i];
+		p->patch[0] = (len & 0xff000000) >> 24;
+		p->patch[1] = (len & 0x00ff0000) >> 16;
+		p->patch[2] = (len & 0x0000ff00) >> 8;
+		p->patch[3] = (len & 0x000000ff);
+
+		recv_sysex(dev_id, base_addr + patch_offset[i], len,
+						p->patch + 4);
+	}
+}
