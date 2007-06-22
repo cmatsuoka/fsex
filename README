@@ -136,10 +136,10 @@ Pat#  Cat  Patch name   M/P Part  Waveform 1 Waveform 2 Waveform 3 Waveform 4
 Sending a patch via SysEx
 =========================
 
-You can send a patch from a .jgl file to the Juno-G with fsex using the -s
-parameter:
+You can send a patch from a .jgl file to the Juno-G temporary patch using the
+-s parameter:
 
-$ fsex -a 20:0 -s 538 XV_Collection.jgl
+$ fsex -a 20:0 -s XV_Collection.jgl:538
 * XV_Collection: Juno-G librarian file (1024 patches)
 Send to MIDI address 20:0
 Send patch 0538: PhazeWahClav (KEY)

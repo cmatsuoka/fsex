@@ -51,5 +51,7 @@ int	create_libfile	(struct fsex_libdata *, char *, int);
 void	close_libfile	(int, int);
 int	write_patch	(int, struct fsex_patch *);
 
+void	parse_spec	(char *, char **, char **);
+void	set_list_flag	(struct fsex_libdata *, char *);
 
 #endif
