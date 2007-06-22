@@ -106,7 +106,7 @@ void recv_sysex(int dev_id, uint32 addr, int len, uint8 *data)
 	buf[i++] = (len & 0x0000ff00) >> 8;
 	buf[i++] = (len & 0x000000ff);
 	
-	sum = checksum(len + 4, buf + start);
+	sum = checksum(start - i, buf + start);
 
 	buf[i++] = sum;
 	buf[i++] = MIDI_CMD_COMMON_SYSEX_END;
@@ -214,6 +214,7 @@ void recv_patch(char *bank, int num, int dev_id, uint8 *data)
 
 	for (i = 0; patch_offset[i] >= 0; i++) {
 		len = patch_blksz[i];
+		_D(_D_INFO "len = %d", len);
 		data[0] = (len & 0xff000000) >> 24;
 		data[1] = (len & 0x00ff0000) >> 16;
 		data[2] = (len & 0x0000ff00) >> 8;

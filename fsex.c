@@ -93,6 +93,21 @@ int main(int argc, char **argv)
 		exit(0);
 	}
 
+	if (opt_send) {
+		if (!filename) {
+			fprintf(stderr, "error: library file required\n");
+			exit(1);
+		}
+		map_lib_file(filename, &lib);
+		if (midi_open(NAME, addr) < 0) {
+			fprintf(stderr, "error: can't open sequencer\n");
+			return 1;
+		}
+		send_patch(&lib, opt_send, dev_id);
+		midi_close();
+		exit(0);
+	}
+
 	if (opt_recv) {
 		int fd;
 		struct fsex_libdata lib;
@@ -114,21 +129,6 @@ int main(int argc, char **argv)
 		recv_patch("PR-A", 1, dev_id, pdata);
 		write_patch(fd, &p);
 		close_libfile(fd, 1);
-		midi_close();
-		exit(0);
-	}
-
-	if (opt_send) {
-		if (!filename) {
-			fprintf(stderr, "error: library file required\n");
-			exit(1);
-		}
-		map_lib_file(filename, &lib);
-		if (midi_open(NAME, addr) < 0) {
-			fprintf(stderr, "error: can't open sequencer\n");
-			return 1;
-		}
-		send_patch(&lib, opt_send, dev_id);
 		midi_close();
 		exit(0);
 	}
