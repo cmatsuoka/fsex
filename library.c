@@ -1,4 +1,5 @@
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -226,3 +227,65 @@ int write_patch(int fd, struct fsex_patch *p)
 
 	return ret;
 }
+
+void parse_spec(char *s, char **fname, char **list)
+{
+	_D(_D_INFO "spec = \"%s\"", s);
+	*fname = strtok(s, ":");
+	*list = strtok(NULL, "");
+	if (*list == NULL) *list = "!";
+	_D(_D_INFO "  fname = \"%s\", list = \"%s\"", *fname, *list);
+}
+
+void set_list_flag(struct fsex_libdata *lib, char *list)
+{
+	char *token;
+	int i, negate = 0;
+
+	if (*list == '!') {
+		negate = 1;
+		list++;
+	}
+
+	for (i = 0; i < lib->num; i++)
+		lib->patch[i].skip = !negate;
+
+	token = strtok(list, ",");
+	while (token) {
+		int a, b;
+		char buf[40], cat[4];
+
+		if (isalpha(*token)) {
+			a = 1;	/* don't run the skip setting loop below */
+			b = 0;
+
+			_D(_D_INFO "token = \"%s\"", token);
+			cat[0] = token[0];
+			cat[1] = token[1];
+			cat[2] = token[2] ? token[2] : ' ';
+			cat[3] = 0;
+
+			for (i = 0; i < lib->num; i++) {
+				int cnum = lib->patch[i].common[PATCH_CATEGORY];
+				if (strncmp(patch_category[cnum].short_name, cat, 3))
+					continue;
+				lib->patch[i].skip = negate;
+			}
+		} else if (strchr(token, '-')) {
+			b = strcspn (token, "-");
+			strncpy(buf, token, b);
+			a = strtoul(buf, NULL, 0);
+			strncpy(buf, token + b + 1, strlen(token) - b - 1);
+			b = strtoul(buf, NULL, 0);
+		} else {
+			a = b = strtoul(token, NULL, 0);
+		}
+
+		for (; b >= a; b--) {
+			if (b > 0 && b <= lib->num)
+				lib->patch[b - 1].skip = negate;
+		}
+		token = strtok (NULL, ",");
+	}
+}
+
