@@ -41,7 +41,7 @@ static struct option lopt[] = {
 
 int main(int argc, char **argv)
 {
-	int i, o, optidx;
+	int o, optidx;
 	int action, force, num_in, num_out;
 	char **file_in, *file_out, *addr;
 	struct fsex_libdata *lib_in;
@@ -134,10 +134,8 @@ int main(int argc, char **argv)
 		midi_close();
 		exit(0);
 		}
-	}
 
-#if 0
-	if (opt_recv) {
+	case 'r': {
 		int fd;
 		struct fsex_libdata lib;
 		struct fsex_patch p;
@@ -150,7 +148,7 @@ int main(int argc, char **argv)
 
 		lib.model = MODEL_JUNOG;
 		p.patch = pdata;
-		fd = create_libfile(&lib, outfile, 1);
+		fd = create_libfile(&lib, file_out, 1);
 		if (fd < 0) {
 			fprintf(stderr, "error: can't create output file\n");
 			exit(1);
@@ -160,8 +158,8 @@ int main(int argc, char **argv)
 		close_libfile(fd, 1);
 		midi_close();
 		exit(0);
+		}
 	}
-#endif
 
 	return 0;
 }
