@@ -7,7 +7,7 @@ fsex - Fantom SysEx Utility
 \fBfsex\fP
 [options]
 [action]
-[patch sources [output file]]
+[sources [destination]]
 .PP 
 .SH "DESCRIPTION" 
 \fBfsex\fP is a utility to send and retrieve data from the Fantom\&,
@@ -34,7 +34,7 @@ reply\&.
 .IP "\fB-h, --help\fP" 
 Show a short summary of command-line options\&.
 .IP "\fB-r, --receive\fP"
-Read the specified patches from the synthesizer\&. See section FILE FORMAT
+Read the specified patches from the synthesizer\&. See section SOURCE FORMAT
 below for the format specification\&.
 .IP "\fB-s, --send\fP" 
 Send the specified patch in the librarian file to the temporary patch
@@ -44,13 +44,13 @@ specification\&.
 Print version information\&.
 .PP 
 .SH "FILE FORMAT"
-The input files can be specified in a `filename:patch_list' format where
-\fIpatch_list\fP is a comma-separated list of numeric ranges or patch
-categories\&. An optional `!' can be used at the beginning of \fIpatch_list\fP
-to invert the list\&. If no patch list is specified, all patches in
-\fIfilename\fP are selected\&. When reading patches from the synthesizer,
-the special file names `USER', `CARD' and `PR-A' to `PR-F' can be used to
-specify the bank where the patches are located. 
+The sources can be specified in a `filename:patch_list' or `bank:patch_list'
+format where \fIpatch_list\fP is a comma-separated list of numeric ranges
+or patch categories\&. An optional `!' can be used at the beginning of
+\fIpatch_list\fP to invert the list\&. If no patch list is specified, all
+patches in \fIfilename\fP are selected\&. When reading patches from the
+synthesizer, the bank names `USER', `CARD' and `PR-A' to `PR-F' can be used
+to specify the bank where the patches are located. 
 .PP
 .SH "EXAMPLES" 
 Send the first patch from a JGL file to the Juno-G:
@@ -62,6 +62,10 @@ bank A and store them in New.jgl, overwriting the library if it already
 exists:
 .IP "" 
 \f(CWfsex -f -r USER:1-5 PR-A:EP New.jgl\fP
+.PP 
+Request information ID from the device and print results
+.IP "" 
+\f(CWfsex -D\fP
 .PP 
 .SH "BUGS" 
 Certainly we have some, but we don't know where they are\&. Please report

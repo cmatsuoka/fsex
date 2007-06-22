@@ -19,10 +19,10 @@
 static void usage()
 {
 	printf(
-"Usage: " NAME " [options] [action] [input libraries] [output library]\n"
+"Usage: " NAME " [options] [action] [sources [destination]]\n"
 "\navailable options:\n"
-"    -f --force		Force overwrite of an existing library\n"
-"    -q --quiet		Set list of patches to merge\n"
+"    -f --force		Overwrite destination if already exists\n"
+"    -q --quiet		Don't print messages to stdout\n"
 "\navailable actions:\n"
 "    -e --extract	Extract patches from library\n"
 "    -h --help		Show short description and exit\n"

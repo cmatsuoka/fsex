@@ -7,7 +7,7 @@ fsex - Fantom SysEx Utility
 \fBfsex\fP
 [options]
 [action]
-[input files [output file]]
+[sources [destination]]
 .PP 
 .SH "DESCRIPTION" 
 \fBflib\fP is a utility to manage data from the librarian program of Fantom\&,
@@ -25,7 +25,7 @@ Don't print messages to stdout\&.
 Exactly one of the following actions should be selected when running flib:
 .IP "\fB-e, --extract\fP"
 Extract the listed patches from the input files and write to the output
-file\&. See section FILE FORMAT below for the file format specification\&.
+file\&. See section SOURCE FORMAT below for the format specification\&.
 .IP "\fB-l, --list\fP" 
 List patches from the input files\&.
 .IP "\fB-h, --help\fP" 
@@ -33,8 +33,8 @@ Show a short summary of command-line options\&.
 .IP "\fB-V, --version\fP" 
 Print version information\&.
 .PP 
-.SH "FILE FORMAT" 
-The input files can be specified in a `filename:patch_list' format where
+.SH "SOURCE FORMAT" 
+The sources can be specified in a `filename:patch_list' format where
 \fIpatch_list\fP is a comma-separated list of numeric ranges or patch
 categories\&. An optional `!' can be used at the beginning of \fIpatch_list\fP
 to invert the list\&. If no patch list is specified, all patches in

@@ -16,11 +16,14 @@
 static void usage()
 {
 	printf(
-"Usage: " NAME " [options] [filename | patches]\n"
-"available options:\n"
+"Usage: " NAME " [options] [action] [sources [destination]]\n"
+"\navailable options:\n"
 "    -a --address port	ALSA sequencer port (default " DEFAULT_ADDR ")\n"
-"    -D --detect		Detect synth model\n"
 "    -d --device id	MIDI device ID (default 0x10)\n"
+"    -f --force		Overwrite destination if already exists\n"
+"    -q --quiet		Don't print messages to stdout\n"
+"\navailable actions:\n"
+"    -D --detect		Detect synth model\n"
 "    -h --help		Show short description and exit\n"
 "    -r --receive name	Retrieve bank b patch n from Juno-G\n"
 "    -s --send num	Send temporary patch to Juno-G\n"

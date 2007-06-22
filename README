@@ -9,7 +9,7 @@
 	*** EXPERIMENTAL, UNTESTED, USE AT YOUR OWN RISK ***
 
 
-fsex (from Fantom SysEx, previously gsex from Juno-G SysEx) is a set of
+Fsex (from Fantom SysEx, previously gsex from Juno-G SysEx) is a set of
 utilities to manipulate libraries and send patches to the Fantom, Juno-G
 and other XV-based Roland synths, written to avoid rebooting to Windows
 every time I want to upload patches from a librarian file to the synthesizer.
