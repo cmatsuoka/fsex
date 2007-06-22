@@ -28,28 +28,28 @@ static void usage()
 	);
 }
 
-#define OPTIONS "a:Dd:hr:s:V"
+#define OPTIONS "a:Dd:hrsV"
 static struct option lopt[] = {
 	{ "address",		1, 0, 'a' },
 	{ "detect",		0, 0, 'D' },
 	{ "device",		1, 0, 'd' },
 	{ "help",		0, 0, 'h' },
-	{ "receive",		1, 0, 'r' },
-	{ "send",		1, 0, 's' },
+	{ "receive",		0, 0, 'r' },
+	{ "send",		0, 0, 's' },
 	{ "version",            0, 0, 'V' },
 };
 
 int main(int argc, char **argv)
 {
-	int o, optidx, opt_send, opt_recv, opt_detect;
-	char *filename, *outfile, *addr;
-	struct fsex_libdata lib;
+	int i, o, optidx;
+	int action, force, num_in, num_out;
+	char **file_in, *file_out, *addr;
+	struct fsex_libdata *lib_in;
 	int dev_id;
 
 	addr = DEFAULT_ADDR;
-	opt_send = opt_detect = 0;
+	action = force = 0;
 	dev_id = 0x10;
-	filename = outfile = NULL;
 
 	while ((o = getopt_long(argc, argv, OPTIONS, lopt, &optidx)) > 0) {
 		switch (o) {
@@ -57,8 +57,14 @@ int main(int argc, char **argv)
 			addr = optarg;
 			break;
 		case 'D':
-			opt_detect = 1;
-			break;
+			if (midi_open(NAME, addr) < 0) {
+				fprintf(stderr,
+					"error: can't open sequencer\n");
+				exit(1);
+			}
+			sysex_get_id(dev_id);
+			midi_close();
+			exit(0);
 		case 'd':
 			dev_id = strtoul(optarg, NULL, 0);
 			break;
@@ -66,11 +72,8 @@ int main(int argc, char **argv)
 			usage();
 			exit(0);
 		case 'r':
-			opt_recv = 1;
-			outfile = optarg;
-			break;
 		case 's':
-			opt_send = strtoul(optarg, NULL, 0);
+			action = o;
 			break;
 		case 'V':
 			printf(NAME " " VERSION "\n");
@@ -80,34 +83,60 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (optind < argc)
-		filename = argv[optind];
-
-	if (opt_detect) {
-		if (midi_open(NAME, addr) < 0) {
-			fprintf(stderr, "error: can't open sequencer\n");
-			exit(1);
-		}
-		sysex_get_id(dev_id);
-		midi_close();
-		exit(0);
+	if (!action) {
+		fprintf(stderr, NAME ": no action specified\n");
+		fprintf(stderr, "Run `" NAME " -h' for more information\n");
+		exit(1);
 	}
 
-	if (opt_send) {
-		if (!filename) {
-			fprintf(stderr, "error: library file required\n");
-			exit(1);
-		}
-		map_lib_file(filename, &lib);
+	/* detect and send have no output */
+	num_in = argc - 1 - optind + (action == 's');
+	num_out = (action == 'r');
+	_D(_D_INFO "num_in = %d, num_out = %d", num_in, num_out);
+
+	lib_in = malloc(num_in * sizeof(struct fsex_libdata));
+	file_in = &argv[optind];
+	if (num_out) file_out = argv[argc - 1];
+
+	if (num_in < 1) {
+		fprintf(stderr, NAME ": patch source required\n");
+		exit(1);
+	}
+
+	if (num_out != 1 && action == 'e') {
+		fprintf(stderr, NAME ": output library file name required\n");
+		exit(1);
+	}
+
+#if 0
+	for (i = 0; i < num_in; i++) {
+		_D(_D_WARN "file_in[%d] = \"%s\"", i, file_in[i]);
+		parse_spec(file_in[i], &fname, &spec);
+		map_lib_file(fname, &lib_in[i]);
+		set_list_flag(&lib_in[i], spec);
+	}
+#endif
+
+	switch (action) {
+	case 's': {
+		char *fname, *spec;
+
+		parse_spec(file_in[0], &fname, &spec);
+		map_lib_file(file_in[0], &lib_in[0]);
+		set_list_flag(&lib_in[0], spec);
+
 		if (midi_open(NAME, addr) < 0) {
 			fprintf(stderr, "error: can't open sequencer\n");
 			return 1;
 		}
-		send_patch(&lib, opt_send, dev_id);
+
+		send_patch(&lib_in[0], dev_id);
 		midi_close();
 		exit(0);
+		}
 	}
 
+#if 0
 	if (opt_recv) {
 		int fd;
 		struct fsex_libdata lib;
@@ -132,9 +161,7 @@ int main(int argc, char **argv)
 		midi_close();
 		exit(0);
 	}
-
-	fprintf(stderr, NAME ": no action specified\n");
-	fprintf(stderr, "Run `" NAME " -h' for more information\n");
+#endif
 
 	return 0;
 }

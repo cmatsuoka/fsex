@@ -5,37 +5,63 @@ fsex - Fantom SysEx Utility
 .PP 
 .SH "SYNOPSIS" 
 \fBfsex\fP
-[\fB-a, --address\fP \fIport\fP]
-[\fB-D, --detect\fP]
-[\fB-d, --device\fP \fIid\fP]
-[\fB-h, --help\fP]
-[\fB-s, --send\fP \fInum\fP]
-[\fB-V, --version\fP]
-[\fIfilename\fP]
+[options]
+[action]
+[patch sources [output file]]
 .PP 
 .SH "DESCRIPTION" 
 \fBfsex\fP is a utility to send and retrieve data from the Fantom\&,
 Juno-G and other Roland synthesizers based on the XV engine\&.
 .PP 
 .SH "OPTIONS" 
+The following options can be used when running fsex:
 .IP "\fB-a, --address\fP \fIport\fP" 
 Set the ALSA MIDI port where the synthesizer is connected\&. It can be
 specified in either numeric (20:0) or name (Juno-G:0) forms\&. The
 default port is 20\&:0\&.
+.IP "\fB-d, --device\fP \fIid\fP"
+Set the MIDI device number (default is 0x10)\&.
+.IP "\fB-f, --force\fP"
+Force overwrite of existing output files\&.
+.IP "\fB-q, --quiet\fP"
+Don't print messages to stdout\&.
+.PP
+.SH "ACTION"
+Exactly one of the following actions should be selected when running flib:
 .IP "\fB-D, --detect\fP" 
 Send a identification request SysEx message and display the identification
 reply\&.
 .IP "\fB-h, --help\fP" 
 Show a short summary of command-line options\&.
-.IP "\fB-s, --send\fP \fInum\fP" 
-Send the specified patch in the librarian file to the synthesizer.
+.IP "\fB-r, --receive\fP"
+Read the specified patches from the synthesizer\&. See section FILE FORMAT
+below for the format specification\&.
+.IP "\fB-s, --send\fP" 
+Send the specified patch in the librarian file to the temporary patch
+area in the synthesizer\&. See section FILE FORMAT below for the format
+specification\&.
 .IP "\fB-V, --version\fP" 
 Print version information\&.
 .PP 
+.SH "FILE FORMAT"
+The input files can be specified in a `filename:patch_list' format where
+\fIpatch_list\fP is a comma-separated list of numeric ranges or patch
+categories\&. An optional `!' can be used at the beginning of \fIpatch_list\fP
+to invert the list\&. If no patch list is specified, all patches in
+\fIfilename\fP are selected\&. When reading patches from the synthesizer,
+the special file names `USER', `CARD' and `PR-A' to `PR-F' can be used to
+specify the bank where the patches are located. 
+.PP
 .SH "EXAMPLES" 
 Send the first patch from a JGL file to the Juno-G:
 .IP "" 
-\f(CWgsex -a Juno-G:0 -s 1 Sineshine.jgl\fP
+\f(CWfsex -a Juno-G:0 -s Sineshine.jgl:1\fP
+.PP 
+Read the first 5 patches from the user bank and the electric pianos from
+bank A and store them in New.jgl, overwriting the library if it already
+exists:
+.IP "" 
+\f(CWfsex -f -r USER:1-5 PR-A:EP New.jgl\fP
 .PP 
 .SH "BUGS" 
 Certainly we have some, but we don't know where they are\&. Please report

@@ -155,18 +155,22 @@ void sysex_get_id(int dev_id)
 			buf[10], buf[11], buf[12], buf[13]);
 }
 
-void send_patch(struct fsex_libdata *lib, int num, int dev_id)
+void send_patch(struct fsex_libdata *lib, int dev_id)
 {
 	uint8 *patch, *data;
 	int i, size, len;
 	uint32 base_addr;
 
-	data = lib->data;
-	
-	for (i = 0; ++i < num; ) {
-		size = val32_be(data);
-		data += 4 + size;
+	/* Locate first valid patch, and send only one to temp area */
+	data = NULL;
+	for (i = 0; i < lib->num; i++) {
+		if (lib->patch[i].skip == 0) {
+			data = lib->patch[i].patch;
+			break;
+		}
 	}
+	if (data == NULL)
+		return;
 
 	size = val32_be(data);
 	patch = data + 4;
@@ -174,7 +178,7 @@ void send_patch(struct fsex_libdata *lib, int num, int dev_id)
 	base_addr = TEMP_PATCH_RHYTHM_PART1 + TEMP_PATCH;
 
 	printf("Send patch %04d: %-12.12s (%s)\n",
-		num, &patch[4 + PATCH_NAME_1],
+		i + 1, &patch[4 + PATCH_NAME_1],
 		patch_category[patch[4 + PATCH_CATEGORY]].short_name);
 
 	for (i = 0; patch_offset[i] >= 0; i++) {
