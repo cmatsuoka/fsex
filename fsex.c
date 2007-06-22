@@ -156,7 +156,7 @@ int main(int argc, char **argv)
 			fprintf(stderr, "error: can't create output file\n");
 			exit(1);
 		}
-		recv_patch("PR-A", 1, dev_id, pdata);
+		p.size = recv_patch("PR-A", 1, dev_id, pdata);
 		write_patch(fd, &p);
 		close_libfile(fd, 1);
 		midi_close();

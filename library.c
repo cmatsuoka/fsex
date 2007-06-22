@@ -213,6 +213,7 @@ int create_libfile(struct fsex_libdata *lib, char *filename, int force)
 
 void close_libfile(int fd, int count)
 {
+	_D(_D_WARN "fd = %d, count = %d", fd, count);
 	lseek(fd, 32, SEEK_SET);
 	write32_be(fd, count);
 	close(fd);
@@ -222,6 +223,7 @@ int write_patch(int fd, struct fsex_patch *p)
 {
 	int ret;
 
+	_D(_D_WARN "fd = %d", fd);
 	ret = (write(fd, p->patch, p->size) == p->size);
 	ret |= (write32_be(fd, 0) == 4); /* FIXME: comment field */
 

@@ -48,6 +48,7 @@ void send_sysex(int dev_id, uint32 addr, int len, uint8 *data)
 	int sum, start;
 	int i;
 
+	_D(_D_INFO "dev_id: 0x%02x, addr: %08x, len: %d", dev_id, addr, len);
 	assert(len < 500);
 
 	i = 0;
@@ -83,6 +84,7 @@ void recv_sysex(int dev_id, uint32 addr, int len, uint8 *data)
 	int sum, start;
 	int i;
 
+	_D(_D_INFO "dev_id: 0x%02x, addr: 0x%08x, len: %d", dev_id, addr, len);
 	assert(len < 500);
 
 	i = 0;
@@ -106,7 +108,7 @@ void recv_sysex(int dev_id, uint32 addr, int len, uint8 *data)
 	buf[i++] = (len & 0x0000ff00) >> 8;
 	buf[i++] = (len & 0x000000ff);
 	
-	sum = checksum(start - i, buf + start);
+	sum = checksum(i - start, buf + start);
 
 	buf[i++] = sum;
 	buf[i++] = MIDI_CMD_COMMON_SYSEX_END;
@@ -196,6 +198,8 @@ static int select_bank(char *bname, uint8 *msb, uint8 *lsb)
 	for (i = 0; bank[i].name; i++) {
 		if (!strcmp(bname, bank[i].name)) {
 			_D(_D_WARN "Select bank: %s", bname);
+			*msb = bank[i].msb;
+			*lsb = bank[i].lsb;
 			return 0;
 		}
 	}
@@ -203,28 +207,38 @@ static int select_bank(char *bname, uint8 *msb, uint8 *lsb)
 	return -1;
 }
 
-void recv_patch(char *bank, int num, int dev_id, uint8 *data)
+int recv_patch(char *bank, int num, int dev_id, uint8 *data)
 {
-	int i, len;
+	int i, len, size;
 	uint32 base_addr;
 	uint8 msb, lsb;
 
+	_D(_D_WARN "bank = %s, num = %d, dev_id = %d", bank, num, dev_id);
+
 	if (select_bank(bank, &msb, &lsb) < 0) {
 		fprintf(stderr, "error: invalid bank %s\n", bank);
-		return;
+		return 0;
 	}
+
+	midi_bank(0, msb, lsb);
+	midi_pgm(0, num);
 
 	base_addr = TEMP_PATCH_RHYTHM_PART1 + TEMP_PATCH;
 
+	size = 0;
 	for (i = 0; patch_offset[i] >= 0; i++) {
 		len = patch_blksz[i];
 		_D(_D_INFO "len = %d", len);
-		data[0] = (len & 0xff000000) >> 24;
-		data[1] = (len & 0x00ff0000) >> 16;
-		data[2] = (len & 0x0000ff00) >> 8;
-		data[3] = (len & 0x000000ff);
-		data += 4;
+		size += 4 + len;
+		*data++ = (len & 0xff000000) >> 24;
+		*data++ = (len & 0x00ff0000) >> 16;
+		*data++ = (len & 0x0000ff00) >> 8;
+		*data++ = (len & 0x000000ff);
+
+		_D(_D_INFO "patch_offset[%d] = %08x", i, patch_offset[i]);
 		recv_sysex(dev_id, base_addr + patch_offset[i], len, data);
 		data += len;
 	}
+
+	return size;
 }

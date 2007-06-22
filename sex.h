@@ -16,7 +16,7 @@ struct bank_sel {
 void	send_sysex	(int, uint32, int, uint8 *);
 void	recv_sysex	(int, uint32, int, uint8 *);
 void    send_patch      (struct fsex_libdata *, int);
-void	recv_patch	(char *, int, int, uint8 *);
+int	recv_patch	(char *, int, int, uint8 *);
 int	checksum	(int, uint8 *);
 void	sysex_get_id	(int);
 
