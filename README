@@ -148,7 +148,7 @@ Send patch 0538: PhazeWahClav (KEY)
 Receive a patch via SysEx
 =========================
 
-$ fsex -r PR-A:1
+$ fsex -r PR-A:1,20-30 USER:PNO New.jgl
 
 
 Request identification

@@ -185,29 +185,28 @@ void send_patch(struct fsex_libdata *lib, int num, int dev_id)
 	}
 }
 
-static int select_patch(char *which, uint8 *msb, uint8 *lsb)
+static int select_bank(char *bname, uint8 *msb, uint8 *lsb)
 {
-	char *token, *bank;
-	char buf[20];
-	int num;
+	int i;
 
-	strncpy(buf, which, 20);
-	bank = strtok(buf, ":");
-	num = strtoul(strtok(NULL, ""), NULL, 0);
-
-	printf("bank = %d, num = %d\n", bank, num);
+	for (i = 0; bank[i].name; i++) {
+		if (!strcmp(bname, bank[i].name)) {
+			_D(_D_WARN "Select bank: %s", bname);
+			return 0;
+		}
+	}
 
 	return -1;
 }
 
-void recv_patch(char *which, int dev_id, struct fsex_patch *p)
+void recv_patch(char *bank, int num, int dev_id, uint8 *data)
 {
 	int i, len;
 	uint32 base_addr;
 	uint8 msb, lsb;
 
-	if (select_patch(which, &msb, &lsb) < 0) {
-		fprintf(stderr, "error: invalid patch %s\n", which);
+	if (select_bank(bank, &msb, &lsb) < 0) {
+		fprintf(stderr, "error: invalid bank %s\n", bank);
 		return;
 	}
 
@@ -215,12 +214,12 @@ void recv_patch(char *which, int dev_id, struct fsex_patch *p)
 
 	for (i = 0; patch_offset[i] >= 0; i++) {
 		len = patch_blksz[i];
-		p->patch[0] = (len & 0xff000000) >> 24;
-		p->patch[1] = (len & 0x00ff0000) >> 16;
-		p->patch[2] = (len & 0x0000ff00) >> 8;
-		p->patch[3] = (len & 0x000000ff);
-
-		recv_sysex(dev_id, base_addr + patch_offset[i], len,
-						p->patch + 4);
+		data[0] = (len & 0xff000000) >> 24;
+		data[1] = (len & 0x00ff0000) >> 16;
+		data[2] = (len & 0x0000ff00) >> 8;
+		data[3] = (len & 0x000000ff);
+		data += 4;
+		recv_sysex(dev_id, base_addr + patch_offset[i], len, data);
+		data += len;
 	}
 }
