@@ -212,6 +212,7 @@ int recv_patch(char *bank, int num, int dev_id, uint8 *data)
 	int i, len, size;
 	uint32 base_addr;
 	uint8 msb, lsb;
+	uint8 *d = data;
 
 	_D(_D_WARN "bank = %s, num = %d, dev_id = %d", bank, num, dev_id);
 
@@ -226,6 +227,8 @@ int recv_patch(char *bank, int num, int dev_id, uint8 *data)
 	base_addr = TEMP_PATCH_RHYTHM_PART1 + TEMP_PATCH;
 
 	size = 0;
+
+	data += 4;
 	for (i = 0; patch_offset[i] >= 0; i++) {
 		len = patch_blksz[i];
 		_D(_D_INFO "len = %d", len);
@@ -239,6 +242,11 @@ int recv_patch(char *bank, int num, int dev_id, uint8 *data)
 		recv_sysex(dev_id, base_addr + patch_offset[i], len, data);
 		data += len;
 	}
+
+	d[0] = (size & 0xff000000) >> 24;
+	d[1] = (size & 0x00ff0000) >> 16;
+	d[2] = (size & 0x0000ff00) >> 8;
+	d[3] = (size & 0x000000ff);
 
 	return size;
 }

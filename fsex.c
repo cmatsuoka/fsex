@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <getopt.h>
 
 #include "common.h"
@@ -144,6 +145,7 @@ int main(int argc, char **argv)
 		struct fsex_patch p;
 		uint8 pdata[2048];
 
+		memset(pdata, 0xfe, 2048);
 		if (midi_open(NAME, addr) < 0) {
 			fprintf(stderr, "error: can't open sequencer\n");
 			return 1;
@@ -156,7 +158,7 @@ int main(int argc, char **argv)
 			fprintf(stderr, "error: can't create output file\n");
 			exit(1);
 		}
-		p.size = recv_patch("PR-A", 1, dev_id, pdata);
+		p.size = recv_patch("USER", 0, dev_id, pdata);
 		write_patch(fd, &p);
 		close_libfile(fd, 1);
 		midi_close();
