@@ -209,7 +209,7 @@ static int select_bank(char *bname, uint8 *msb, uint8 *lsb)
 
 int recv_patch(char *bank, int num, int dev_id, uint8 *data)
 {
-	int i, len, size;
+	int i, len, real_len, size;
 	uint32 base_addr;
 	uint8 msb, lsb;
 	uint8 *d = data;
@@ -231,17 +231,20 @@ int recv_patch(char *bank, int num, int dev_id, uint8 *data)
 	data += 4;
 	for (i = 0; patch_offset[i] >= 0; i++) {
 		len = patch_blksz[i];
-		_D(_D_INFO "len = %d", len);
-		size += 4 + len;
-		*data++ = (len & 0xff000000) >> 24;
-		*data++ = (len & 0x00ff0000) >> 16;
-		*data++ = (len & 0x0000ff00) >> 8;
-		*data++ = (len & 0x000000ff);
+		real_len = DATA_SIZE(len);
+		_D(_D_INFO "len = %d, real_len = %d", len, real_len);
+		size += 4 + real_len;
+		*data++ = (real_len & 0xff000000) >> 24;
+		*data++ = (real_len & 0x00ff0000) >> 16;
+		*data++ = (real_len & 0x0000ff00) >> 8;
+		*data++ = (real_len & 0x000000ff);
 
 		_D(_D_INFO "patch_offset[%d] = %08x", i, patch_offset[i]);
 		recv_sysex(dev_id, base_addr + patch_offset[i], len, data);
-		data += len;
+		data += real_len;
 	}
+
+	size += 4;	/* comment area */
 
 	d[0] = (size & 0xff000000) >> 24;
 	d[1] = (size & 0x00ff0000) >> 16;
