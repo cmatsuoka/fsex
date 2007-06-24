@@ -207,7 +207,41 @@ static int select_bank(char *bname, uint8 *msb, uint8 *lsb)
 	return -1;
 }
 
-int recv_patch(char *bank, int num, int dev_id, uint8 *data)
+int map_synth_patches(char *bankname, struct fsex_libdata *lib)
+{
+	int i;
+
+	lib->model = MODEL_NONE;
+	lib->filename = bankname;
+	printf("* %s: ", bankname);
+
+	for (i = 0; bank[i].name; i++) {
+		if (!strcmp(bankname, bank[i].name)) {
+			_D(_D_WARN "Select bank: %s/%02x%02x",
+				bank[i].name, bank[i].msb, bank[i].lsb);
+			printf("%d patches\n", bank[i].max - bank[i].min + 1);
+			break;
+		}
+	}
+	if (bank[i].name == NULL) {
+		fprintf(stderr, "invalid bank %s\n", bankname);
+		exit(1);
+	}
+
+	lib->num = bank[i].max - bank[i].min + 1;
+
+	lib->patch = malloc(lib->num * sizeof(struct fsex_patch));
+	if (lib->patch == NULL) {
+		perror("error");
+		exit(1);
+	}
+
+	//load_patches(lib);
+
+	return 0;
+}
+
+int recv_patch(struct fsex_libdata *lib, int num, int dev_id, uint8 *data)
 {
 	int i, len, real_len, size;
 	uint32 base_addr;
@@ -215,15 +249,19 @@ int recv_patch(char *bank, int num, int dev_id, uint8 *data)
 	uint8 *d = data;
 	uint8 buf[550];
 
-	_D(_D_WARN "bank = %s, num = %d, dev_id = %d", bank, num, dev_id);
+	_D(_D_WARN "lib->filename = %s, num = %d, dev_id = %d",
+						lib->filename, num, dev_id);
 
-	if (select_bank(bank, &msb, &lsb) < 0) {
-		fprintf(stderr, "error: invalid bank %s\n", bank);
+	if (select_bank(lib->filename, &msb, &lsb) < 0) {
+		fprintf(stderr, "error: invalid bank %s\n", lib->filename);
 		return 0;
 	}
 
+	if (num == 0)
+		return -1;
+
 	midi_bank(0, msb, lsb);
-	midi_pgm(0, num);
+	midi_pgm(0, num - 1);
 
 	base_addr = TEMP_PATCH_RHYTHM_PART1 + TEMP_PATCH;
 
@@ -245,7 +283,7 @@ int recv_patch(char *bank, int num, int dev_id, uint8 *data)
 		recv_sysex(dev_id, base_addr + patch_offset[i], len, 500, buf);
 		memcpy(data, buf + 11, real_len);
 
-#ifdef _TRACE
+#if _TRACE > 1
 		_D(_D_INFO "");
 		{ int j;
 		  printf("*** received data:");
@@ -265,3 +303,46 @@ int recv_patch(char *bank, int num, int dev_id, uint8 *data)
 
 	return size;
 }
+
+
+void recv_patches(int dev_id, char **file_in, struct fsex_libdata *lib, int num, char *output)
+{
+	int i, j, fd;
+	struct fsex_libdata lib_out;
+	struct fsex_patch p;
+	uint8 pdata[2048];
+	int num_patches;
+
+	_D(_D_WARN "dev_id: %d, file_in[0]: %s, num: %d, output: %s",
+					dev_id, file_in[0], num, output);
+	lib_out.model = MODEL_JUNOG;
+	p.patch = pdata;
+	fd = create_libfile(&lib_out, output, 1);
+	if (fd < 0) {
+		fprintf(stderr, "error: can't create output file\n");
+		exit(1);
+	}
+
+	printf("\nReceive patches from synth:\n\n");
+	num_patches = 0;
+	for (j = 0; j < num; j++) {
+		for (i = 0; i < lib[j].num; i++) {
+			if (lib[j].patch[i].skip)
+				continue;
+
+			p.size = recv_patch(&lib[j], i + 1, dev_id, pdata);
+			p.common = pdata + 8;
+			printf("%s:%04d  %s  %-12.12s\n",
+				lib[j].filename, i + 1,
+				patch_category[p.common[PATCH_CATEGORY]].short_name,
+				&p.common[PATCH_NAME_1]);
+			write_patch(fd, &p);
+			num_patches++;
+		}
+	}
+
+	printf("\nCreate new library: %s\n", output);
+
+	close_libfile(fd, num_patches);
+}
+

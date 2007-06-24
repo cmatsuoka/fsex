@@ -45,9 +45,10 @@ static struct option lopt[] = {
 
 int main(int argc, char **argv)
 {
-	int o, optidx;
+	int i, o, optidx;
 	int action, force, num_in, num_out;
 	char **file_in, *file_out, *addr;
+	char *fname, *spec;
 	struct fsex_libdata *lib_in;
 	int dev_id;
 
@@ -112,58 +113,37 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-#if 0
-	for (i = 0; i < num_in; i++) {
-		_D(_D_WARN "file_in[%d] = \"%s\"", i, file_in[i]);
-		parse_spec(file_in[i], &fname, &spec);
-		map_lib_file(fname, &lib_in[i]);
-		set_list_flag(&lib_in[i], spec);
-	}
-#endif
 
 	switch (action) {
-	case 's': {
-		char *fname, *spec;
-
+	case 's':
 		parse_spec(file_in[0], &fname, &spec);
-		map_lib_file(file_in[0], &lib_in[0]);
+		map_lib_file(fname, &lib_in[0]);
 		set_list_flag(&lib_in[0], spec);
 
 		if (midi_open(NAME, addr) < 0) {
 			fprintf(stderr, "error: can't open sequencer\n");
-			return 1;
+			exit(1);
 		}
 
+		/* Send only one patch to temporary area */
 		send_patch(&lib_in[0], dev_id);
 		midi_close();
 		exit(0);
+	case 'r':
+		for (i = 0; i < num_in; i++) {
+			_D(_D_WARN "file_in[%d] = \"%s\"", i, file_in[i]);
+			parse_spec(file_in[i], &fname, &spec);
+			map_synth_patches(fname, &lib_in[i]);
+			set_list_flag(&lib_in[i], spec);
 		}
 
-	case 'r': {
-		int fd;
-		struct fsex_libdata lib;
-		struct fsex_patch p;
-		uint8 pdata[2048];
-
-		memset(pdata, 0xfe, 2048);
 		if (midi_open(NAME, addr) < 0) {
 			fprintf(stderr, "error: can't open sequencer\n");
-			return 1;
-		}
-
-		lib.model = MODEL_JUNOG;
-		p.patch = pdata;
-		fd = create_libfile(&lib, file_out, 1);
-		if (fd < 0) {
-			fprintf(stderr, "error: can't create output file\n");
 			exit(1);
 		}
-		p.size = recv_patch("USER", 0, dev_id, pdata);
-		write_patch(fd, &p);
-		close_libfile(fd, 1);
+		recv_patches(dev_id, file_in, lib_in, num_in, file_out);
 		midi_close();
 		exit(0);
-		}
 	}
 
 	return 0;
