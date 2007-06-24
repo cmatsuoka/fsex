@@ -7,7 +7,9 @@
 
 				 v0.1
 
-	*** EXPERIMENTAL, UNTESTED, USE AT YOUR OWN RISK ***
+	     *** EXPERIMENTAL - USE AT YOUR OWN RISK ***
+
+	   *** CURRENT VERSION TESTED ONLY WITH JUNO-G ***
 
 
 Fsex (from Fantom SysEx, previously gsex from Juno-G SysEx) is a set of
