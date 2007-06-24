@@ -78,14 +78,14 @@ void send_sysex(int dev_id, uint32 addr, int len, uint8 *data)
 	midi_sysex_send(i, buf);
 }
 
-void recv_sysex(int dev_id, uint32 addr, int len, uint8 *data)
+void recv_sysex(int dev_id, uint32 addr, int len, int dsize, uint8 *data)
 {
 	static uint8 buf[550];
 	int sum, start;
 	int i;
 
 	_D(_D_INFO "dev_id: 0x%02x, addr: 0x%08x, len: %d", dev_id, addr, len);
-	assert(len < 500);
+	assert(len <= 500);
 
 	i = 0;
 	buf[i++] = MIDI_CMD_COMMON_SYSEX;
@@ -114,12 +114,12 @@ void recv_sysex(int dev_id, uint32 addr, int len, uint8 *data)
 	buf[i++] = MIDI_CMD_COMMON_SYSEX_END;
 
 	midi_sysex_send(i, buf);
-	midi_sysex_recv(len, data);
+	midi_sysex_recv(dsize, data);
 }
 
 void sysex_get_id(int dev_id)
 {
-	static uint8 buf[550];
+	static uint8 buf[20];
 	int i, len;
 	
 	i = 0;
@@ -131,7 +131,7 @@ void sysex_get_id(int dev_id)
 	buf[i++] = MIDI_CMD_COMMON_SYSEX_END;
 
 	midi_sysex_send(i, buf);
-	len = midi_sysex_recv(500, buf);
+	len = midi_sysex_recv(20, buf);
 
 	/* Juno-G 1.06 replies f0 7e 10 06 02 41 15 02 00 00 00 03 00 00 f7 */
 
@@ -213,6 +213,7 @@ int recv_patch(char *bank, int num, int dev_id, uint8 *data)
 	uint32 base_addr;
 	uint8 msb, lsb;
 	uint8 *d = data;
+	uint8 buf[550];
 
 	_D(_D_WARN "bank = %s, num = %d, dev_id = %d", bank, num, dev_id);
 
@@ -231,6 +232,7 @@ int recv_patch(char *bank, int num, int dev_id, uint8 *data)
 	data += 4;
 	for (i = 0; patch_offset[i] >= 0; i++) {
 		len = patch_blksz[i];
+		assert(len < 500);
 		real_len = DATA_SIZE(len);
 		_D(_D_INFO "len = %d, real_len = %d", len, real_len);
 		size += 4 + real_len;
@@ -240,7 +242,17 @@ int recv_patch(char *bank, int num, int dev_id, uint8 *data)
 		*data++ = (real_len & 0x000000ff);
 
 		_D(_D_INFO "patch_offset[%d] = %08x", i, patch_offset[i]);
-		recv_sysex(dev_id, base_addr + patch_offset[i], len, data);
+		recv_sysex(dev_id, base_addr + patch_offset[i], len, 500, buf);
+		memcpy(data, buf + 11, real_len);
+
+#ifdef _TRACE
+		_D(_D_INFO "");
+		{ int j;
+		  printf("*** received data:");
+		  for (j = 0; j < real_len; j++) printf(" %02x", data[j]);
+		  printf("\n");
+		}
+#endif
 		data += real_len;
 	}
 

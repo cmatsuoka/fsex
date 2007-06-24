@@ -183,7 +183,7 @@ int create_libfile(struct fsex_libdata *lib, char *filename, int force)
 		return -1;
 	}
 
-	fd = open(filename, O_WRONLY | O_CREAT, 0666);
+	fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0666);
 	if (fd < 0) {
 		perror("error");
 		return -1;

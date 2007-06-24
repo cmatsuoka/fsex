@@ -23,12 +23,11 @@ static void midi_send(snd_seq_event_t *ev, int d)
 	snd_seq_drain_output(seq);
 }
 
-static int midi_recv(int len, snd_seq_event_t **e)
+static int midi_recv(snd_seq_event_t **e)
 {
 	snd_seq_event_t *ev;
 	int /*n, */err;
 
-	_D(_D_INFO "len = %d", len);
 	if ((err = snd_seq_event_input(seq, &ev)) < 0) {
 		fprintf(stderr, "snd_seq_event_input: %s\n", strerror(err));
 		return -1;
@@ -167,7 +166,7 @@ void midi_sysex_send(int len, void *ptr)
 
 #if _TRACE
 	{ int i;
-	  printf("SysEx send:");
+	  printf("*** SysEx send:");
 	  for (i = 0; i < len; i++) printf(" %02x", ((uint8 *)ptr)[i]);
 	  printf("\n");
 	}
@@ -182,11 +181,17 @@ int midi_sysex_recv(int len, void *ptr)
 	snd_seq_event_t *ev;
 	int r;
 
-	r = midi_recv(len, &ev);
-	memcpy(ptr, ev->data.ext.ptr + 11, len);
+	r = midi_recv(&ev);
+
+	if (ev->data.ext.len > len)
+		return -1;
+
+	len = ev->data.ext.len;
+
+	memcpy(ptr, ev->data.ext.ptr, len);
 #if _TRACE
 	{ int i;
-	  printf("SysEx receive:");
+	  printf("*** SysEx receive:");
 	  for (i = 0; i < len; i++) printf(" %02x", ((uint8 *)ptr)[i]);
 	  printf("\n");
 	}
