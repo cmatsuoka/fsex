@@ -8,6 +8,7 @@
 #include "common.h"
 #include "midi.h"
 #include "xv.h"
+#include "id.h"
 #include "sex.h"
 
 extern char *manufacturer[];
@@ -26,7 +27,7 @@ static struct bank_sel bank[] = {
 	{ NULL,     0,   0,    0,    0,    0 }
 };
 
-int checksum(int len, uint8 *data)
+static int checksum(int len, uint8 *data)
 {
 	int i, acc;
 
@@ -42,7 +43,7 @@ int checksum(int len, uint8 *data)
 	return 0x80 - acc;
 }
 
-void send_sysex(int dev_id, uint32 addr, int len, uint8 *data)
+static void send_sysex(int model, int dev_id, uint32 addr, int len, uint8 *data)
 {
 	static uint8 buf[550];
 	int sum, start;
@@ -55,6 +56,7 @@ void send_sysex(int dev_id, uint32 addr, int len, uint8 *data)
 	buf[i++] = MIDI_CMD_COMMON_SYSEX;
 	buf[i++] = 0x41;	/* Roland ID */
 	buf[i++] = dev_id;	/* Device ID */
+
 	buf[i++] = 0x00;	/* Juno-G ID (FIXME: allow other devices) */
 	buf[i++] = 0x00;	/* Juno-G ID */
 	buf[i++] = 0x15;	/* Juno-G ID */
@@ -78,7 +80,7 @@ void send_sysex(int dev_id, uint32 addr, int len, uint8 *data)
 	midi_sysex_send(i, buf);
 }
 
-void recv_sysex(int dev_id, uint32 addr, int len, int dsize, uint8 *data)
+static void recv_sysex(int dev_id, uint32 addr, int len, int dsize, uint8 *data)
 {
 	static uint8 buf[550];
 	int sum, start;
@@ -186,7 +188,8 @@ void send_patch(struct fsex_libdata *lib, int dev_id)
 	for (i = 0; patch_offset[i] >= 0; i++) {
 		len = val32_be(patch);
 		patch += 4;
-		send_sysex(dev_id, base_addr + patch_offset[i], len, patch);
+		send_sysex(lib->model, dev_id, base_addr + patch_offset[i],
+								len, patch);
 		patch += len;
 	}
 }
@@ -235,8 +238,6 @@ int map_synth_patches(char *bankname, struct fsex_libdata *lib)
 		perror("error");
 		exit(1);
 	}
-
-	//load_patches(lib);
 
 	return 0;
 }

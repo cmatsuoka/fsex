@@ -13,11 +13,8 @@ struct bank_sel {
 	int prg_bias;
 };
 
-void	send_sysex		(int, uint32, int, uint8 *);
-void	recv_sysex		(int, uint32, int, int, uint8 *);
 void    send_patch     		(struct fsex_libdata *, int);
 int	recv_patch		(struct fsex_libdata *, int, int, uint8 *);
-int	checksum		(int, uint8 *);
 void	sysex_get_id		(int);
 int	map_synth_patches	(char *, struct fsex_libdata *);
 void	recv_patches		(int, char **, struct fsex_libdata *,

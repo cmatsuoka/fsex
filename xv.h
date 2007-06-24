@@ -4,14 +4,6 @@
 
 #include "common.h"
 
-enum xv_model {
-	MODEL_NONE,
-	MODEL_XV5080,
-	MODEL_FANTOMS,
-	MODEL_FANTOMX,
-	MODEL_JUNOG
-};
-
 enum xv_address_map {
 	TEMP_PATCH_RHYTHM_PART1		= 0x1f000000,
 };

@@ -4,6 +4,7 @@
 
 #include "xv.h"
 #include "library.h"
+#include "id.h"
 #include "lib.h"
 
 

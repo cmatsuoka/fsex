@@ -11,6 +11,7 @@
 #include "common.h"
 #include "xv.h"
 #include "library.h"
+#include "id.h"
 
 
 #define CHECK_SIZE(x,y) do {\
@@ -19,7 +20,6 @@
 			(x), DATA_SIZE((y))); \
 		return -1; \
 	} } while (0)
-
 
 int patch_blksz[] = {
 	PATCH_COMMON_SIZE,
@@ -46,7 +46,6 @@ int patch_offset[] = {
 	PATCH_TONE_4,
 	-1
 };
-
 
 void load_patches(struct fsex_libdata *lib)
 {
@@ -86,6 +85,7 @@ void load_patches(struct fsex_libdata *lib)
 int map_lib_file(char *filename, struct fsex_libdata *lib)
 {
 	char *idstr;
+	struct fsex_id *id;
 
 	lib->data = mapfile(filename);
 	if (lib->data == NULL) {
@@ -97,19 +97,15 @@ int map_lib_file(char *filename, struct fsex_libdata *lib)
 	lib->filename = filename;
 	printf("* %s: ", filename);
 
-	if (!memcmp(lib->data, "JunoGLibrarianFile0000          ", 32)) {
-		idstr = "Juno-G librarian file";
-		lib->model = MODEL_JUNOG;
-	} else if (!memcmp(lib->data,"FantomSLibrarianFile0000        ", 32)) {
-		idstr = "Fantom-S librarian file";
-		lib->model = MODEL_FANTOMS;
-	} else if (!memcmp(lib->data,"FantomXLibrarianFile0000        ", 32)) {
-		idstr = "Fantom-X librarian file";
-		lib->model = MODEL_FANTOMX;
-	} else {
+	id = find_id_by_libid(lib->data);
+	if (id == NULL) {
 		printf("unknown\n");
 		exit(1);
 	}
+
+	idstr = id->name;
+	lib->model = id->model;
+
 	lib->data += 32;
 	lib->num = val32_be(lib->data);
 	lib->data += 128;
@@ -119,7 +115,7 @@ int map_lib_file(char *filename, struct fsex_libdata *lib)
 		exit(1);
 	}
 
-	printf("%s (%d patches)\n", idstr, lib->num);
+	printf("%s library file (%d patches)\n", idstr, lib->num);
 
 	lib->patch = malloc(lib->num * sizeof(struct fsex_patch));
 	if (lib->patch == NULL) {
@@ -174,8 +170,9 @@ int check_lib(struct fsex_libdata *lib)
 int create_libfile(struct fsex_libdata *lib, char *filename, int force)
 {
 	int fd;
-	char *str, c = 0;
+	char c = 0;
 	struct stat buf;
+	struct fsex_id *id;
 
 	if (!force && !stat(filename, &buf)) {
 		fprintf(stderr, "%s already exists, use -f to overwrite\n",
@@ -189,22 +186,13 @@ int create_libfile(struct fsex_libdata *lib, char *filename, int force)
 		return -1;
 	}
 
-	switch(lib->model) {
-	case MODEL_JUNOG:
-		str = "JunoGLibrarianFile0000          ";
-		break;
-	case MODEL_FANTOMX:
-		str = "FantomXLibrarianFile0000        ";
-		break;
-	case MODEL_FANTOMS:
-		str = "FantomSLibrarianFile0000        ";
-		break;
-	default:
+	id = find_id_by_model(lib->model);
+	if (id == NULL) {
 		fprintf(stderr, "error: unsupported library format\n");
 		exit(1);
 	}
 
-	write(fd, str, 32);
+	write(fd, id->lib_id, 32);
 	lseek(fd, 159, SEEK_SET);
 	write(fd, &c, 1);
 
