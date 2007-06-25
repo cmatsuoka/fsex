@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 					"error: can't open sequencer\n");
 				exit(1);
 			}
-			sysex_get_id(dev_id);
+			show_id(sysex_get_id(dev_id));
 			midi_close();
 			exit(0);
 		case 'd':

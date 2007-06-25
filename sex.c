@@ -87,7 +87,7 @@ static void send_sysex(int model, int dev_id, uint32 addr, int len, uint8 *data)
 	midi_sysex_send(i, buf);
 }
 
-static void recv_sysex(int dev_id, uint32 addr, int len, int dsize, uint8 *data)
+static void recv_sysex(int model, int dev_id, uint32 addr, int len, int dsize, uint8 *data)
 {
 	static uint8 buf[550];
 	int sum, start;
@@ -134,11 +134,13 @@ static void recv_sysex(int dev_id, uint32 addr, int len, int dsize, uint8 *data)
 	midi_sysex_recv(dsize, data);
 }
 
-void sysex_get_id(int dev_id)
+uint8 *sysex_get_id(int dev_id)
 {
 	static uint8 buf[20];
 	int i, len;
 	
+	_D(_D_WARN "dev_id = %d", dev_id);
+
 	i = 0;
 	buf[i++] = MIDI_CMD_COMMON_SYSEX;
 	buf[i++] = 0x7e;	/* Non-realtime */
@@ -150,6 +152,26 @@ void sysex_get_id(int dev_id)
 	midi_sysex_send(i, buf);
 	len = midi_sysex_recv(20, buf);
 
+	return buf;
+}
+
+int get_model(int dev_id)
+{
+	uint8 *buf;
+
+	buf = sysex_get_id(dev_id);
+	switch (buf[6]) {
+	case 0x15:
+		return MODEL_JUNOG;
+	case 0x6b:
+		return MODEL_FANTOMX;
+	default:
+		return MODEL_NONE;
+	}
+}
+
+void show_id(uint8 *buf)
+{
 	/* Juno-G 1.06 replies f0 7e 10 06 02 41 15 02 00 00 00 03 00 00 f7 */
 
 	if (buf[0]!=0xf0 || buf[1]!=0x7e || buf[3]!=0x06 || buf[4]!=0x02) {
@@ -229,7 +251,7 @@ int map_synth_patches(char *bankname, struct fsex_libdata *lib)
 {
 	int i;
 
-	lib->model = MODEL_NONE;
+	//lib->model = MODEL_NONE;
 	lib->filename = bankname;
 	printf("* %s: ", bankname);
 
@@ -296,7 +318,8 @@ int recv_patch(struct fsex_libdata *lib, int num, int dev_id, uint8 *data)
 		*data++ = (real_len & 0x000000ff);
 
 		_D(_D_INFO "patch_offset[%d] = %08x", i, patch_offset[i]);
-		recv_sysex(dev_id, base_addr + patch_offset[i], len, 500, buf);
+		recv_sysex(lib->model, dev_id, base_addr + patch_offset[i],
+							len, 500, buf);
 		memcpy(data, buf + 11, real_len);
 
 #if _TRACE > 1
@@ -320,20 +343,22 @@ int recv_patch(struct fsex_libdata *lib, int num, int dev_id, uint8 *data)
 	return size;
 }
 
-
 void recv_patches(int dev_id, char **file_in, struct fsex_libdata *lib, int num, char *output)
 {
 	int i, j, fd;
-	struct fsex_libdata lib_out;
+	//struct fsex_libdata lib_out;
+	int model;
 	struct fsex_patch p;
 	uint8 pdata[2048];
 	int num_patches;
-
+	
 	_D(_D_WARN "dev_id: %d, file_in[0]: %s, num: %d, output: %s",
 					dev_id, file_in[0], num, output);
-	lib_out.model = MODEL_JUNOG;
+
+	model = get_model(dev_id);
+
 	p.patch = pdata;
-	fd = create_libfile(&lib_out, output, 1);
+	fd = create_libfile(lib, output, 1);
 	if (fd < 0) {
 		fprintf(stderr, "error: can't create output file\n");
 		exit(1);
@@ -346,6 +371,7 @@ void recv_patches(int dev_id, char **file_in, struct fsex_libdata *lib, int num,
 			if (lib[j].patch[i].skip)
 				continue;
 
+			lib[j].model = model;
 			p.size = recv_patch(&lib[j], i + 1, dev_id, pdata);
 			p.common = pdata + 8;
 			printf("%s:%04d  %s  %-12.12s\n",
