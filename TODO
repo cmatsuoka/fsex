@@ -1,6 +1,7 @@
 
 * Generalize code to handle synths other than Juno-G
 * Get model ID from sysex RQ1 when receiving patches, create appropriate lib
+* Verify checksum when receiving data from synth
 * Test in synths other than Juno-G
 * Check how data other than patches are stored in lib files
 * Handle other data types

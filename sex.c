@@ -47,19 +47,26 @@ static void send_sysex(int model, int dev_id, uint32 addr, int len, uint8 *data)
 {
 	static uint8 buf[550];
 	int sum, start;
-	int i;
+	struct fsex_id *id;
+	int i, j;
 
 	_D(_D_INFO "dev_id: 0x%02x, addr: %08x, len: %d", dev_id, addr, len);
-	assert(len < 500);
+	assert(len <= 500);
+
+	id = find_id_by_model(model);
+	if (id == NULL) {
+		_D(_D_CRIT "model not found");
+		return;
+	}
 
 	i = 0;
 	buf[i++] = MIDI_CMD_COMMON_SYSEX;
 	buf[i++] = 0x41;	/* Roland ID */
 	buf[i++] = dev_id;	/* Device ID */
 
-	buf[i++] = 0x00;	/* Juno-G ID (FIXME: allow other devices) */
-	buf[i++] = 0x00;	/* Juno-G ID */
-	buf[i++] = 0x15;	/* Juno-G ID */
+	for (j = 0; j < id->id_size; j++)
+		buf[i++] = id->id[j];
+
 	buf[i++] = 0x12;	/* Command ID (DT1) */
 
 	start = i;
@@ -84,18 +91,26 @@ static void recv_sysex(int dev_id, uint32 addr, int len, int dsize, uint8 *data)
 {
 	static uint8 buf[550];
 	int sum, start;
-	int i;
+	struct fsex_id *id;
+	int i, j;
 
 	_D(_D_INFO "dev_id: 0x%02x, addr: 0x%08x, len: %d", dev_id, addr, len);
 	assert(len <= 500);
+
+	id = find_id_by_model(model);
+	if (id == NULL) {
+		_D(_D_CRIT "model not found");
+		return;
+	}
 
 	i = 0;
 	buf[i++] = MIDI_CMD_COMMON_SYSEX;
 	buf[i++] = 0x41;	/* Roland ID */
 	buf[i++] = dev_id;	/* Device ID */
-	buf[i++] = 0x00;	/* Juno-G ID (FIXME: allow other devices) */
-	buf[i++] = 0x00;	/* Juno-G ID */
-	buf[i++] = 0x15;	/* Juno-G ID */
+
+	for (j = 0; j < id->id_size; j++)
+		buf[i++] = id->id[j];
+
 	buf[i++] = 0x11;	/* Command ID (RQ1) */
 
 	start = i;
