@@ -1,7 +1,10 @@
---- alsa-driver-1.0.14rc2.orig/sound/usb/usbquirks.h    2007-01-15 14:25:30.000000000 +0100
-+++ alsa-driver-1.0.14rc2/sound/usb/usbquirks.h 2007-03-05 15:35:44.000000000 +0100
-@@ -242,0 +243,13 @@
-+{ /* Roland Juno-G */
+--- linux-2.6.21/sound/usb/usbquirks.h-orig	2007-06-27 13:49:22.000000000 -0300
++++ linux-2.6.21/sound/usb/usbquirks.h	2007-06-27 13:51:11.000000000 -0300
+@@ -1062,6 +1062,19 @@
+ 		}
+ 	}
+ },
++{
 +	USB_DEVICE(0x582, 0x00a6),
 +	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
 +		.vendor_name = "Roland",
@@ -14,4 +17,6 @@
 +		}
 +	}
 +},
-
+ {	/*
+ 	 * This quirk is for the "Advanced" modes of the Edirol UA-25.
+ 	 * If the switch is not in an advanced setting, the UA-25 has

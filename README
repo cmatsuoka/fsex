@@ -12,15 +12,15 @@
 	   *** CURRENT VERSION TESTED ONLY WITH JUNO-G ***
 
 
-Fsex (from Fantom SysEx, previously gsex from Juno-G SysEx) is a set of
-utilities to manipulate libraries and send patches to the Fantom, Juno-G
-and other XV-based Roland synths, written to avoid rebooting to Windows
-every time I want to upload patches from a librarian file to the synthesizer.
+Fsex (from Fantom SysEx) is a set of utilities to manipulate libraries and
+send patches to the Roland Fantom S, Fantom X and Juno-G, written to avoid
+rebooting to Windows every time I want to transfer patches from and to the
+synthesizer.
 
 The name is inspired by the Virus SysEX dump utility, vsex.
 
 Note: Fsex is currently under development and was only tested with the
-Juno-G, but should work with minor changes with other devices.
+Juno-G, but should work with other devices.
 
 Get the latest version using:
 
@@ -32,12 +32,12 @@ Send comments and patches to cmatsuoka@gmail.com
 Kernel patch
 ============
 
-Linux kernels 2.6.21 and earlier (at least) require a patch written by
-Alexandre Jousset to properly recognize the Juno-G. See alsa-junog.patch
-for further information. Apply it with:
+Linux kernels 2.6.21 and earlier (at least) require a patch to properly
+recognize the Juno-G. See linux-2.6.21-junog.patch for further information.
+Apply it with:
 
 # cd /usr/src/linux-${version}
-# patch -p1 < alsa-junog.patch
+# patch -p1 < linux-2.6.21-junog.patch
 
 
 ALSA MIDI client
