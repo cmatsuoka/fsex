@@ -19,7 +19,7 @@ every time I want to upload patches from a librarian file to the synthesizer.
 
 The name is inspired by the Virus SysEX dump utility, vsex.
 
-**Note**: fsex is currently under development and was only tested with the
+Note: Fsex is currently under development and was only tested with the
 Juno-G, but should work with minor changes with other devices.
 
 Get the latest version using:

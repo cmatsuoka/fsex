@@ -5,6 +5,7 @@
 #include "xv.h"
 #include "library.h"
 #include "id.h"
+#include "patch.h"
 #include "lib.h"
 
 

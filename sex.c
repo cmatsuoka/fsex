@@ -9,6 +9,7 @@
 #include "midi.h"
 #include "xv.h"
 #include "id.h"
+#include "patch.h"
 #include "sex.h"
 
 extern char *manufacturer[];

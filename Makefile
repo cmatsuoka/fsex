@@ -6,7 +6,7 @@ CC	= gcc
 CFLAGS	= -O0 -g -Wall -DVERSION=\"$(VERSION)\" #-D_TRACE
 LD	= gcc
 LDFLAGS	=
-CMN_OBJ	= common.o library.o category.o id.o
+CMN_OBJ	= common.o library.o category.o id.o patch.o
 SEX_OBJ	= sex.o manufacturer.o midi_alsa.o fsex.o
 LIB_OBJ	= lib.o junog_waves.o fantom_waves.o xv5080_waves.o flib.o
 OBJS	= $(CMN_OBJ) $(SEX_OBJ) $(LIB_OBJ)
