@@ -40,13 +40,14 @@ int list_patches(struct fsex_libdata *lib)
 
 	data = lib->data;
 
-	printf("\n");
+	printf("\nPatches from %s:\n\n", lib->filename);
+
 	printf("Pat#  Cat  Patch name   M/P Tone  Waveform 1 Waveform 2 "
 			"Waveform 3 Waveform 4\n");
 	printf("----- ---- ------------- -- ----- ---------- ---------- "
 			"---------- ----------\n");
 
-	for (i = 0; i < lib->num; i++) {
+	for (i = 0; i < lib->num_patch; i++) {
 		if (lib->patch[i].skip)
 			continue;
 
@@ -107,7 +108,7 @@ int extract_patch(struct fsex_libdata *lib, int num, char *output, int force)
 	count = 0;
 	for (j = 0; j < num; j++) {
 		printf("\nExtract patch from %s:\n", lib[j].filename);
-		for (i = 0; i < lib[j].num; i++) {
+		for (i = 0; i < lib[j].num_patch; i++) {
 			if (lib[j].patch[i].skip)
 				continue;
 

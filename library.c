@@ -48,7 +48,7 @@ int map_lib_file(char *filename, struct fsex_libdata *lib)
 	lib->model = id->model;
 
 	lib->data += 32;
-	lib->num = val32_be(lib->data);
+	lib->num_patch = val32_be(lib->data);
 	lib->data += 128;
 
 	if (check_lib(lib) < 0) {
@@ -56,9 +56,9 @@ int map_lib_file(char *filename, struct fsex_libdata *lib)
 		exit(1);
 	}
 
-	printf("%s library file (%d patches)\n", idstr, lib->num);
+	printf("%s library file (%d patches)\n", idstr, lib->num_patch);
 
-	lib->patch = malloc(lib->num * sizeof(struct fsex_patch));
+	lib->patch = malloc(lib->num_patch * sizeof(struct fsex_patch));
 	if (lib->patch == NULL) {
 		perror("error");
 		exit(1);
@@ -87,7 +87,7 @@ int check_lib(struct fsex_libdata *lib)
 		return -1;
 	}
 
-	for (j = 0; j < lib->num; j++) {
+	for (j = 0; j < lib->num_patch; j++) {
 		size = val32_be(data);
 		data += 4;
 		patch = data;
@@ -167,7 +167,7 @@ void set_list_flag(struct fsex_libdata *lib, char *list)
 		list++;
 	}
 
-	for (i = 0; i < lib->num; i++)
+	for (i = 0; i < lib->num_patch; i++)
 		lib->patch[i].skip = !negate;
 
 	token = strtok(list, ",");
@@ -185,7 +185,7 @@ void set_list_flag(struct fsex_libdata *lib, char *list)
 			cat[2] = token[2] ? token[2] : ' ';
 			cat[3] = 0;
 
-			for (i = 0; i < lib->num; i++) {
+			for (i = 0; i < lib->num_patch; i++) {
 				int cnum = lib->patch[i].common[PATCH_CATEGORY];
 				if (strncmp(patch_category[cnum].short_name, cat, 3))
 					continue;
@@ -202,7 +202,7 @@ void set_list_flag(struct fsex_libdata *lib, char *list)
 		}
 
 		for (; b >= a; b--) {
-			if (b > 0 && b <= lib->num)
+			if (b > 0 && b <= lib->num_patch)
 				lib->patch[b - 1].skip = negate;
 		}
 		token = strtok (NULL, ",");

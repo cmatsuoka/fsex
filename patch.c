@@ -50,7 +50,7 @@ void load_patches(struct fsex_libdata *lib)
 	data = lib->data;
 	p = lib->patch;
 
-	for (i = 0; i < lib->num; i++) {
+	for (i = 0; i < lib->num_patch; i++) {
 		p[i].size = val32_be(data);
 		p[i].patch = data;
 		data += 4;

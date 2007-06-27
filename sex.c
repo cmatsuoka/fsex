@@ -205,7 +205,7 @@ void send_patch(struct fsex_libdata *lib, int dev_id)
 
 	/* Locate first valid patch, and send only one to temp area */
 	data = NULL;
-	for (i = 0; i < lib->num; i++) {
+	for (i = 0; i < lib->num_patch; i++) {
 		if (lib->patch[i].skip == 0) {
 			data = lib->patch[i].patch;
 			break;
@@ -269,9 +269,9 @@ int map_synth_patches(char *bankname, struct fsex_libdata *lib)
 		exit(1);
 	}
 
-	lib->num = bank[i].max - bank[i].min + 1;
+	lib->num_patch = bank[i].max - bank[i].min + 1;
 
-	lib->patch = malloc(lib->num * sizeof(struct fsex_patch));
+	lib->patch = malloc(lib->num_patch * sizeof(struct fsex_patch));
 	if (lib->patch == NULL) {
 		perror("error");
 		exit(1);
@@ -368,7 +368,7 @@ void recv_patches(int dev_id, char **file_in, struct fsex_libdata *lib, int num,
 	printf("\nReceive patches from synth:\n\n");
 	num_patches = 0;
 	for (j = 0; j < num; j++) {
-		for (i = 0; i < lib[j].num; i++) {
+		for (i = 0; i < lib[j].num_patch; i++) {
 			if (lib[j].patch[i].skip)
 				continue;
 

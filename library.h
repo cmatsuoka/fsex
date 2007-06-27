@@ -11,7 +11,11 @@ struct fsex_category {
 
 struct fsex_libdata {
 	int model;
-	int num;
+	int num_patch;
+	int num_perf;
+	int num_arp;
+	int num_chord;
+	int num_mfx;
 	char *filename;
 	struct fsex_patch *patch;
 	uint8 *data;

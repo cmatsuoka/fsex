@@ -112,7 +112,6 @@ int main(int argc, char **argv)
 	switch (action) {
 	case 'l':
 		for (i = 0; i < num_in; i++) {
-			printf("\nPatches from %s:\n", file_in[i]);
 			if (list_patches(&lib_in[i]) < 0)
 				err = 1;
 		}
