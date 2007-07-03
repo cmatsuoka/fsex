@@ -3,7 +3,7 @@ NAME	= fsex
 PKG	= $(NAME)-$(VERSION)
 
 CC	= gcc
-CFLAGS	= -O0 -g -Wall -DVERSION=\"$(VERSION)\" #-D_TRACE
+CFLAGS	= -O0 -g -Wall -DVERSION=\"$(VERSION)\" -D_TRACE
 LD	= gcc
 LDFLAGS	=
 CMN_OBJ	= common.o library.o category.o id.o patch.o

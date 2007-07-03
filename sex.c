@@ -56,7 +56,7 @@ static void send_sysex(int model, int dev_id, uint32 addr, int len, uint8 *data)
 
 	id = find_id_by_model(model);
 	if (id == NULL) {
-		_D(_D_CRIT "model not found");
+		fprintf(stderr, "error: MIDI device not recognized\n");
 		return;
 	}
 
@@ -100,7 +100,7 @@ static void recv_sysex(int model, int dev_id, uint32 addr, int len, int dsize, u
 
 	id = find_id_by_model(model);
 	if (id == NULL) {
-		_D(_D_CRIT "model not found");
+		fprintf(stderr, "error: MIDI device not recognized\n");
 		return;
 	}
 
@@ -347,9 +347,9 @@ int recv_patch(struct fsex_libdata *lib, int num, int dev_id, uint8 *data)
 void recv_patches(int dev_id, char **file_in, struct fsex_libdata *lib, int num, char *output)
 {
 	int i, j, fd;
-	//struct fsex_libdata lib_out;
 	int model;
 	struct fsex_patch p;
+	struct fsex_id *id;
 	uint8 pdata[2048];
 	int num_patches;
 	
@@ -357,15 +357,22 @@ void recv_patches(int dev_id, char **file_in, struct fsex_libdata *lib, int num,
 					dev_id, file_in[0], num, output);
 
 	model = get_model(dev_id);
+	id = find_id_by_model(model);
+	if (id == NULL) {
+		fprintf(stderr, "error: MIDI device not recognized\n");
+		return;
+	}
 
 	p.patch = pdata;
+	lib->model = id->model;
+
 	fd = create_libfile(lib, output, 1);
 	if (fd < 0) {
 		fprintf(stderr, "error: can't create output file\n");
 		exit(1);
 	}
 
-	printf("\nReceive patches from synth:\n\n");
+	printf("\nReceive patches from %s:\n\n", id->name);
 	num_patches = 0;
 	for (j = 0; j < num; j++) {
 		for (i = 0; i < lib[j].num_patch; i++) {

@@ -160,7 +160,7 @@ $ fsex -r USER:2,40-42 PR-A:1-3 New.jgl
 * PR-A: 128 patches
 Send to MIDI address 20:0
 
-Receive patches from synth:
+Receive patches from Juno-G:
 
 USER:0002  PLS  VocoBassline
 USER:0040  PLS  Next Step
@@ -171,21 +171,6 @@ PR-A:0002  PNO  Bright Grand
 PR-A:0003  PNO  Soft Grand
 
 Create new library: New.jgl
-
-$ flib -l New.jgl
-* New.jgl: Juno-G librarian file (7 patches)
-
-Patches from New.jgl:
-
-Pat#  Cat  Patch name   M/P Tone  Waveform 1 Waveform 2 Waveform 3 Waveform 4
------ ---- ------------- -- ----- ---------- ---------- ---------- ----------
-0001  PLS  VocoBassline  m  1234  Juno Saw H Juno Saw H Juno Saw H Juno Saw H
-0002  PLS  Next Step     P  1234  TB303 Saw  TB303 Saw  TB303 Saw  JP8 Pls 05
-0003  SBS  JP8 Seq Bass  m  12--  JP8 Pls 05 700 Triang Custm Saw  Ac.Pno p A
-0004  BTS  RetroSonic 1  P  12--  JP8 Pls 05 JP8 Pls 05 TB303 Saw  Ac.Pno p A
-0005  PNO  Juno-G Grand  P  1234  Ac.Pno p A Ac.Pno f A Ac.Pno p A Ac.Pno f A
-0006  PNO  Bright Grand  P  1234  Ac.Pno p B Ac.Pno f B Ac.Pno p B Ac.Pno f B
-0007  PNO  Soft Grand    P  1234  Ac.Pno p C Ac.Pno f C Ac.Pno p C Ac.Pno f C
 
 
 Request identification
