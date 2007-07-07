@@ -88,10 +88,10 @@ static void send_sysex(int model, int dev_id, uint32 addr, int len, uint8 *data)
 	midi_sysex_send(i, buf);
 }
 
-static void recv_sysex(int model, int dev_id, uint32 addr, int len, int dsize, uint8 *data)
+static int recv_sysex(int model, int dev_id, uint32 addr, int len, int dsize, uint8 *data)
 {
 	static uint8 buf[550];
-	int sum, start;
+	int sum, start, rlen;
 	struct fsex_id *id;
 	int i, j;
 
@@ -101,7 +101,7 @@ static void recv_sysex(int model, int dev_id, uint32 addr, int len, int dsize, u
 	id = find_id_by_model(model);
 	if (id == NULL) {
 		fprintf(stderr, "error: MIDI device not recognized\n");
-		return;
+		return -1;
 	}
 
 	i = 0;
@@ -132,7 +132,22 @@ static void recv_sysex(int model, int dev_id, uint32 addr, int len, int dsize, u
 	buf[i++] = MIDI_CMD_COMMON_SYSEX_END;
 
 	midi_sysex_send(i, buf);
-	midi_sysex_recv(dsize, data);
+	rlen = midi_sysex_recv(dsize, data);
+
+	if (rlen < 2)
+		return -1;
+
+	sum = checksum(rlen - 4 - 2 - 3, data + 4 + 3);
+
+	_D(_D_WARN "sum = %02x\n", sum);
+	_D(_D_WARN "data = %02x %02x\n", data[rlen - 2], data[rlen - 1]);
+
+	if (sum != data[rlen - 2]) {
+		fprintf(stderr, "SysEx DT1 checksum error!\n");
+		return -1;
+	}
+
+	return 0;
 }
 
 uint8 *sysex_get_id(int dev_id)
@@ -252,7 +267,6 @@ int map_synth_patches(char *bankname, struct fsex_libdata *lib)
 {
 	int i;
 
-	//lib->model = MODEL_NONE;
 	lib->filename = bankname;
 	printf("* %s: ", bankname);
 
@@ -334,7 +348,7 @@ int recv_patch(struct fsex_libdata *lib, int num, int dev_id, uint8 *data)
 		data += real_len;
 	}
 
-	size += 4;	/* comment area */
+	size += 4;	/* comment area? */
 
 	d[0] = (size & 0xff000000) >> 24;
 	d[1] = (size & 0x00ff0000) >> 16;

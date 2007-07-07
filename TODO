@@ -1,6 +1,5 @@
 
 * Generalize code to handle synths other than Juno-G
-* Verify checksum when receiving data from synth
 * Test in synths other than Juno-G
 * Check how data other than patches are stored in lib files
 * Handle other data types

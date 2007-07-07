@@ -179,9 +179,8 @@ void midi_sysex_send(int len, void *ptr)
 int midi_sysex_recv(int len, void *ptr)
 {
 	snd_seq_event_t *ev;
-	int r;
 
-	r = midi_recv(&ev);
+	midi_recv(&ev);
 
 	if (ev->data.ext.len > len)
 		return -1;
@@ -199,5 +198,5 @@ int midi_sysex_recv(int len, void *ptr)
 
 	snd_seq_free_event(ev);
 
-	return r;
+	return len;
 }
