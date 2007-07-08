@@ -1,8 +1,7 @@
 
-* Generalize code to handle synths other than Juno-G
 * Test in synths other than Juno-G
 * Check how data other than patches are stored in lib files
 * Handle other data types
 * Display better device detection information (family, model, etc)
-* Verify if model is correct before sending data (with -f override)
+* Verify if model is correct before sending data (with -f/--force override)
 
