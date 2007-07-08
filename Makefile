@@ -10,8 +10,8 @@ CMN_OBJ	= common.o library.o category.o id.o patch.o
 SEX_OBJ	= sex.o manufacturer.o midi_alsa.o fsex.o
 LIB_OBJ	= lib.o junog_waves.o fantom_waves.o xv5080_waves.o flib.o
 OBJS	= $(CMN_OBJ) $(SEX_OBJ) $(LIB_OBJ)
-DFILES	= Makefile README TODO common.h midi.h xv.h library.h lib.h sex.h \
-	  id.h patch.h fsex.1 flib.1 alsa-junog.patch
+DFILES	= Makefile README TODO LICENSE common.h midi.h xv.h library.h lib.h \
+	  sex.h id.h patch.h fsex.1 flib.1 linux-2.6.21-junog.patch
 
 .c.o:
 	$(CC) -c $(CFLAGS) -o $*.o $<
