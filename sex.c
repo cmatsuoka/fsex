@@ -393,18 +393,18 @@ void get_patches(int dev_id, char **file_in, struct fsex_libdata *lib, int num, 
 			lib[j].model = model;
 			p.size = recv_patch(&lib[j], i + 1, dev_id, pdata);
 			p.common = pdata + 8;
-			printf("%s:%04d  %s  %-12.12s",
-				lib[j].filename, i + 1,
-				patch_category[p.common[PATCH_CATEGORY]].short_name,
-				&p.common[PATCH_NAME_1]);
+			printf("%s:%04d  ", lib[j].filename, i + 1);
 
 			if (p.size < 0) {
-				printf(": SysEx DT1 checksum error - skip");
+				printf(": SysEx DT1 checksum error - skip\n");
 			} else {
+				printf("%s  %-12.12s\n",
+					patch_category[p.common[PATCH_CATEGORY]].short_name,
+					&p.common[PATCH_NAME_1]);
+
 				write_patch(fd, &p);
 				num_patches++;
 			}
-			printf("\n");
 		}
 	}
 
