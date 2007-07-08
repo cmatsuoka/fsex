@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 			fprintf(stderr, "error: can't open sequencer\n");
 			exit(1);
 		}
-		recv_patches(dev_id, file_in, lib_in, num_in, file_out);
+		get_patches(dev_id, file_in, lib_in, num_in, file_out);
 		midi_close();
 		exit(0);
 	}

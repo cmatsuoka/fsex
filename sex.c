@@ -30,18 +30,12 @@ static struct bank_sel bank[] = {
 
 static int checksum(int len, uint8 *data)
 {
-	int i, acc;
+	int i, sum;
 
-	acc = 0;
-	for (i = 0; i < len; i++) {
-		acc += *data++;
-		if (acc > 0x7f)
-			acc -= 0x80;
-	}
+	for (sum = i = 0; i < len; i++)
+		sum = (sum + *data++) & 0x7f;
 
-	acc %= 0x80;
-
-	return 0x80 - acc;
+	return 0x80 - sum;
 }
 
 static void send_sysex(int model, int dev_id, uint32 addr, int len, uint8 *data)
@@ -137,15 +131,13 @@ static int recv_sysex(int model, int dev_id, uint32 addr, int len, int dsize, ui
 	if (rlen < 2)
 		return -1;
 
-	sum = checksum(rlen - 4 - 2 - 3, data + 4 + 3);
+	sum = checksum(rlen - 5 - id->id_size, data + 4 + id->id_size);
 
 	_D(_D_WARN "sum = %02x\n", sum);
 	_D(_D_WARN "data = %02x %02x\n", data[rlen - 2], data[rlen - 1]);
 
-	if (sum != data[rlen - 2]) {
-		fprintf(stderr, "SysEx DT1 checksum error!\n");
+	if (sum != 0x80)
 		return -1;
-	}
 
 	return 0;
 }
@@ -322,6 +314,8 @@ int recv_patch(struct fsex_libdata *lib, int num, int dev_id, uint8 *data)
 
 	data += 4;
 	for (i = 0; patch_offset[i] >= 0; i++) {
+		int r;
+
 		len = patch_blksz[i];
 		assert(len < 500);
 		real_len = DATA_SIZE(len);
@@ -333,8 +327,11 @@ int recv_patch(struct fsex_libdata *lib, int num, int dev_id, uint8 *data)
 		*data++ = (real_len & 0x000000ff);
 
 		_D(_D_INFO "patch_offset[%d] = %08x", i, patch_offset[i]);
-		recv_sysex(lib->model, dev_id, base_addr + patch_offset[i],
+		r = recv_sysex(lib->model, dev_id, base_addr + patch_offset[i],
 							len, 500, buf);
+		if (r < 0)
+			return -1;
+
 		memcpy(data, buf + 11, real_len);
 
 #if _TRACE > 1
@@ -358,7 +355,7 @@ int recv_patch(struct fsex_libdata *lib, int num, int dev_id, uint8 *data)
 	return size;
 }
 
-void recv_patches(int dev_id, char **file_in, struct fsex_libdata *lib, int num, char *output)
+void get_patches(int dev_id, char **file_in, struct fsex_libdata *lib, int num, char *output)
 {
 	int i, j, fd;
 	int model;
@@ -396,12 +393,18 @@ void recv_patches(int dev_id, char **file_in, struct fsex_libdata *lib, int num,
 			lib[j].model = model;
 			p.size = recv_patch(&lib[j], i + 1, dev_id, pdata);
 			p.common = pdata + 8;
-			printf("%s:%04d  %s  %-12.12s\n",
+			printf("%s:%04d  %s  %-12.12s",
 				lib[j].filename, i + 1,
 				patch_category[p.common[PATCH_CATEGORY]].short_name,
 				&p.common[PATCH_NAME_1]);
-			write_patch(fd, &p);
-			num_patches++;
+
+			if (p.size < 0) {
+				printf(": SysEx DT1 checksum error - skip");
+			} else {
+				write_patch(fd, &p);
+				num_patches++;
+			}
+			printf("\n");
 		}
 	}
 
