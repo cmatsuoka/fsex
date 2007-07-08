@@ -17,7 +17,7 @@ send patches to the Roland Fantom S, Fantom X and Juno-G, written to avoid
 rebooting to Windows every time I want to transfer patches from and to the
 synthesizer.
 
-The name is inspired by the Virus SysEX dump utility, vsex.
+The name is inspired by the Virus SysEx dump utility, vsex.
 
 Note: Fsex is currently under development and was only tested with the
 Juno-G, but should work with other devices.
@@ -33,8 +33,8 @@ Kernel patch
 ============
 
 Linux kernels 2.6.22 and earlier require a patch to properly recognize the
-Juno-G. See linux-2.6.21-junog.patch for further information.  Apply it
-with:
+Juno-G. Kernels 2.6.23 and later should have Juno-G support already included.
+See linux-2.6.21-junog.patch for further information. Apply the patch with:
 
 # cd /usr/src/linux-${version}
 # patch -p1 < linux-2.6.21-junog.patch
