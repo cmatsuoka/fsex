@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <getopt.h>
 
 #include "common.h"
@@ -32,12 +36,13 @@ static void usage()
 	);
 }
 
-#define OPTIONS "a:Dd:hrsV"
+#define OPTIONS "a:Dd:hqrsV"
 static struct option lopt[] = {
 	{ "address",		1, 0, 'a' },
 	{ "detect",		0, 0, 'D' },
 	{ "device",		1, 0, 'd' },
 	{ "help",		0, 0, 'h' },
+	{ "quiet",		0, 0, 'q' },
 	{ "receive",		0, 0, 'r' },
 	{ "send",		0, 0, 's' },
 	{ "version",            0, 0, 'V' },
@@ -76,6 +81,9 @@ int main(int argc, char **argv)
 		case 'h':
 			usage();
 			exit(0);
+		case 'q':
+			dup2(open("/dev/null", O_WRONLY), STDOUT_FILENO);
+			break;
 		case 'r':
 		case 's':
 			action = o;

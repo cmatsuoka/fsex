@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 			printf(NAME " " VERSION "\n");
 			exit(0);
 		case 'q':
-			dup2(open("/dev/null", O_WRONLY), 1);
+			dup2(open("/dev/null", O_WRONLY), STDOUT_FILENO);
 			break;
 		default:
 			exit(1);
