@@ -9,6 +9,24 @@
 #include "convert.h"
 
 
+struct equiv_waves {
+	char *a;
+	char *b;
+};
+
+
+struct equiv_waves equiv[] = {
+	{ "Dyno Rhd mpA", "Dyno EP mp A" },
+	{ "Dyno Rhd mpB", "Dyno EP mp B" },
+	{ "Dyno Rhd mpC", "Dyno EP mp C" },
+	{ "Dyno Rhd mfA", "Dyno EP mf A" },
+	{ "Dyno Rhd mfB", "Dyno EP mf B" },
+	{ "Dyno Rhd mfC", "Dyno EP mf C" },
+	{ "Dyno Rhd ffA", "Dyno EP ff A" },
+	{ "Dyno Rhd ffB", "Dyno EP ff B" },
+	{ "Dyno Rhd ffC", "Dyno EP ff C" },
+};
+
 
 static char *waveform_name(int model, int group, int n)
 {
@@ -32,6 +50,21 @@ static char *waveform_name(int model, int group, int n)
 	}
 }
 
+
+static int match(char *a, char *b)
+{
+	int i;
+
+	if (!strcmp(a, b))
+		return 1;
+
+	for (i = 0; equiv[i].a; i++) {
+		if (!strcmp(a, equiv[i].a) && !strcmp(b, equiv[i].b))
+			return 1;
+	}
+		
+	return 0;
+}
 
 static int convert_waveform(int from, int to, int n)
 {
@@ -64,7 +97,7 @@ static int convert_waveform(int from, int to, int n)
 	}
 
 	for (i = 0; wave[i]; i++) {
-		if (!strcmp(wave[i], name))
+		if (match(name, wave[i]))
 			return i;
 	}
 
@@ -72,12 +105,41 @@ static int convert_waveform(int from, int to, int n)
 }
 
 
-int convert_patches(struct fsex_libdata *lib)
+static void do_conversion(int tone, int from, int to, uint8 *patch)
+{
+	int n, g;
+
+	n = val32_lsn(&patch[WAVE_NUMBER_L]);
+	g = patch[WAVE_GROUP_TYPE];
+
+	if (n > 0 && g == 0) {
+		int x;
+
+		printf("\t\t\t%d: %-12.12s (%4d)  ==>  ",
+			tone, waveform_name(from, g, n), n);
+
+		x = convert_waveform(from, to, n);
+		if (x < 0) {
+			printf("** FAIL **\n");
+		} else {
+			printf("%-12.12s (%4d)\n",
+				waveform_name(to, g, x), x);
+			//setval32_lsn(&patch[WAVE_NUMBER_L], x);
+		}
+	}
+}
+
+int convert_patches(struct fsex_libdata *lib, int dest, char *output, int force)
 {
 	uint8 *patch, *data;
-	int i, n, g;
+	int i, fd;
 
 	data = lib->data;
+
+	fd = create_libfile(lib, output, force);
+	if (fd < 0) {
+		return fd;
+	}
 
 	printf("\nPatches from %s:\n\n", lib->filename);
 
@@ -85,52 +147,35 @@ int convert_patches(struct fsex_libdata *lib)
 		if (lib->patch[i].skip)
 			continue;
 
+//printf("-- %d\n", lib->patch[i].size);
+//		memcpy(newpatch, lib->patch[i], lib->patch[i].size);
+
 		/* Patch Common */
 		patch = lib->patch[i].common;
 		printf(" %04d  [%-12.12s]\r", i + 1, &patch[PATCH_NAME_1]);
 
 		/* Patch Tone 1 */
 		patch = lib->patch[i].tone1;
-		n = val32_lsn(&patch[WAVE_NUMBER_L]);
-		g = patch[WAVE_GROUP_TYPE];
-
-		if (n > 0 && g == 0) {
-			printf("\t\t\t1: %-10.10s (%d)\n",
-				waveform_name(lib->model, g, n), n);
-		}
+		do_conversion(1, lib->model, dest, patch);
 
 		/* Patch Tone 2 */
 		patch = lib->patch[i].tone2;
-		n = val32_lsn(&patch[WAVE_NUMBER_L]);
-		g = patch[WAVE_GROUP_TYPE];
-
-		if (n > 0 && g == 0) {
-			printf("\t\t\t2: %-10.10s (%d)\n",
-				waveform_name(lib->model, g, n), n);
-		}
+		do_conversion(2, lib->model, dest, patch);
 
 		/* Patch Tone 3 */
 		patch = lib->patch[i].tone3;
-		n = val32_lsn(&patch[WAVE_NUMBER_L]);
-		g = patch[WAVE_GROUP_TYPE];
-
-		if (n > 0 && g == 0) {
-			printf("\t\t\t3: %-10.10s (%d)\n",
-				waveform_name(lib->model, g, n), n);
-		}
+		do_conversion(3, lib->model, dest, patch);
 
 		/* Patch Tone 4 */
 		patch = lib->patch[i].tone4;
-		n = val32_lsn(&patch[WAVE_NUMBER_L]);
-		g = patch[WAVE_GROUP_TYPE];
+		do_conversion(4, lib->model, dest, patch);
 
-		if (n > 0 && g == 0) {
-			printf("\t\t\t4: %-10.10s (%d)\n",
-				waveform_name(lib->model, g, n), n);
-		}
-
-		printf("\n");
+		write_patch(fd, &lib->patch[i]);
 	}
+
+	printf("\nCreate new library: %s\n", output);
+
+	close_libfile(fd, i);
 
 	return 0;
 }

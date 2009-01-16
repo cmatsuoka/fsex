@@ -21,6 +21,14 @@ int32 val32_lsn(uint8 *b)
 		(((int)b[2] & 0x0f) << 4) | (b[3] & 0x0f);
 }
 
+void setval32_lsn(uint8 *b, uint32 val)
+{
+	b[0] = (val & 0xf000) >> 12;
+	b[1] = (val & 0x0f00) >> 8;
+	b[2] = (val & 0x00f0) >> 4;
+	b[3] = (val & 0x000f);
+}
+
 int32 val32_le(uint8 *b)
 {
 	return (((int)b[3]) << 24) | (((int)b[2]) << 16) |

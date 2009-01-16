@@ -4,6 +4,6 @@
 
 #include "library.h"
 
-int	convert_patches    (struct fsex_libdata *);
+int	convert_patches    (struct fsex_libdata *, int, char *, int);
 
 #endif

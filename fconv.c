@@ -10,6 +10,7 @@
 
 #include "common.h"
 #include "xv.h"
+#include "id.h"
 #include "library.h"
 #include "convert.h"
 
@@ -46,13 +47,15 @@ int main(int argc, char **argv)
 	char **file_in, *file_out;
 	struct fsex_libdata *lib_in;
 	int err;
+	int dest;
 
-	action = force = 0;
+	action = force = dest = 0;
 
 	while ((o = getopt_long(argc, argv, OPTIONS, lopt, &optidx)) > 0) {
 		switch (o) {
 		case 'j':
 			action = o;
+			dest = MODEL_JUNOG;
 			break;
 		case 'f':
 			force = 1;
@@ -107,10 +110,8 @@ int main(int argc, char **argv)
 
 	switch (action) {
 	case 'j':
-		for (i = 0; i < num_in; i++) {
-			if (convert_patches(&lib_in[i]) < 0)
-				err = 1;
-		}
+		if (convert_patches(lib_in, dest, file_out, force) < 0)
+			err = 1;
 		break;
 	default:
 		fprintf(stderr, NAME ": unknown action\n");
