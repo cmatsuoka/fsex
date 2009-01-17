@@ -5,7 +5,7 @@
 			 / __(__  )  __/>  <
 			/_/ /____/\___/_/|_|
 
-				 v0.1
+				 v0.2
 
 	     *** EXPERIMENTAL - USE AT YOUR OWN RISK ***
 
@@ -189,4 +189,42 @@ Identification reply
  Family number : 15 02
  Model number  : 00 00
  Version       : 00 03 00 00
+
+
+----------------------------[ fconv examples ]-------------------------------
+
+Convert a library from Fantom-S to Juno-G
+=========================================
+
+fconv tries to convert libraries from different synths by matching waveform
+names. Patches using waveform names that don't match won't be converted
+correctly.
+
+$ fconv -f --jgl SRX03AP5.fsl SRX03AP5.jgl
+* SRX03AP5.fsl: Fantom-S library file (128 patches)
+
+Patches from SRX03AP5.fsl:
+
+ 0001  [United !    ]   3: Vl Sect. A R ( 420)  ==>  Vl Sect. A R ( 546)
+                        4: Full Str A L ( 431)  ==>  Full Str A L ( 557)
+ 0002  [Cool EP     ]   2: Dyno Rhd mpB (  36)  ==>  Dyno EP mp B ( 186)
+ 0003  [Distorted B ]   2: Org Basic 1  (  88)  ==>  Org Basic 1  ( 238)
+ 0004  [Welcome Home]   3: Full Str B L ( 433)  ==>  Full Str B L ( 559)
+ 0006  [FeedDa /Aft ]   4: E.Gtr Harm   ( 201)  ==>  E.Gtr Harm   ( 352)
+...
+
+$ flib --list SRX03AP5.jgl
+* asd.jgl: Juno-G library file (128 patches)
+
+Patches from SRX03AP5.jgl:
+
+Pat#  Cat  Patch name   M/P Tone  Waveform 1 Waveform 2 Waveform 3 Waveform 4
+----- ---- ------------- -- ----- ---------- ---------- ---------- ----------
+0001  PNO  United !      P  1234  SRX        SRX        Vl Sect. A Full Str A
+0002  EP   Cool EP       P  12--  SRX        Dyno EP mp (unset)    (unset)
+0003  ORG  Distorted B   P  12--  SRX        Org Basic  (unset)    (unset)
+0004  AGT  Welcome Home  P  1234  SRX        SRX        Full Str B SRX
+0005  EGT  Bark Guitar   P  123-  SRX        SRX        SRX        (unset)
+0006  DGT  FeedDa /Aft   P  12-4  SRX        SRX        SRX        E.Gtr Harm
+...
 

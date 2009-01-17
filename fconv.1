@@ -1,0 +1,49 @@
+.TH "FCONV" "1" "Version 0\&.2" "Jan 2009" "Fantom Utilities" 
+.PP 
+.SH "NAME" 
+fconv - Fantom Library Conversion Utility
+.PP 
+.SH "SYNOPSIS" 
+\fBfconv\fP
+[options]
+[action]
+[sources [destination]]
+.PP 
+.SH "DESCRIPTION" 
+\fBfconv\fP is a utility to convert libraries from different Roland
+synthesizers data based on the XV engine\&, such as the Fantom-S\&,
+Fantom-X and Juno-G\&. Currently it supports conversion from .fxl and .fsl
+to .jgl\&. The conversion is performed by matching waveform names, and
+names that have no match will be left unconverted\&.
+.PP 
+.SH "OPTIONS" 
+The following options can be used when running flib:
+.IP "\fB-f, --force\fP" 
+Force overwrite of existing output files\&.
+.IP "\fB-q, --quiet\fP" 
+Don't print messages to stdout\&.
+.PP
+.SH "ACTION"
+Exactly one of the following actions should be selected when running flib:
+.IP "\fB-e, --jgl\fP"
+Convert libraries from other formats to Juno-G\&.
+.IP "\fB-h, --help\fP" 
+Show a short summary of command-line options\&.
+.IP "\fB-V, --version\fP" 
+Print version information\&.
+.PP 
+.SH "EXAMPLES" 
+Convert a library from Fantom-S FSL to Juno-G JGL:
+.IP "" 
+\f(CWfconv --jgl SRX03AP5.fsl SRX03AP5.jgl\fP
+.PP 
+.SH "BUGS" 
+Certainly we have some, but we don't know where they are\&. Please report
+any bugs you find\&.
+.PP 
+.SH "AUTHOR" 
+Written by Claudio Matsuoka <cmatsuoka@gmail.com>\&.
+.PP 
+.SH "SEE ALSO" 
+flib(1)\&, fsex(1)\&.
+.PP 

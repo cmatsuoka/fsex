@@ -20,7 +20,7 @@
 static void usage()
 {
 	printf(
-"Usage: " NAME " [options] action source [destination]\n"
+"Usage: " NAME " [options] [action] [source [destination]]\n"
 "\navailable options:\n"
 "    -f --force		Overwrite destination if already exists\n"
 "    -q --quiet		Don't print messages to stdout\n"
