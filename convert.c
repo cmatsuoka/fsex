@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "xv.h"
 #include "library.h"
@@ -124,7 +125,7 @@ static void do_conversion(int tone, int from, int to, uint8 *patch)
 		} else {
 			printf("%-12.12s (%4d)\n",
 				waveform_name(to, g, x), x);
-			//setval32_lsn(&patch[WAVE_NUMBER_L], x);
+			setval32_lsn(&patch[WAVE_NUMBER_L], x);
 		}
 	}
 }
@@ -133,10 +134,13 @@ int convert_patches(struct fsex_libdata *lib, int dest, char *output, int force)
 {
 	uint8 *patch, *data;
 	int i, fd;
+	uint8 newpatch[2000];
+	struct fsex_libdata newlib;
 
 	data = lib->data;
 
-	fd = create_libfile(lib, output, force);
+	newlib.model = dest;
+	fd = create_libfile(&newlib, output, force);
 	if (fd < 0) {
 		return fd;
 	}
@@ -147,30 +151,31 @@ int convert_patches(struct fsex_libdata *lib, int dest, char *output, int force)
 		if (lib->patch[i].skip)
 			continue;
 
-//printf("-- %d\n", lib->patch[i].size);
-//		memcpy(newpatch, lib->patch[i], lib->patch[i].size);
+		memcpy(newpatch, lib->patch[i].patch, lib->patch[i].size);
 
 		/* Patch Common */
-		patch = lib->patch[i].common;
+		patch = newpatch + (lib->patch[i].common - lib->patch[i].patch);
 		printf(" %04d  [%-12.12s]\r", i + 1, &patch[PATCH_NAME_1]);
 
 		/* Patch Tone 1 */
-		patch = lib->patch[i].tone1;
+		patch = newpatch + (lib->patch[i].tone1 - lib->patch[i].patch);
 		do_conversion(1, lib->model, dest, patch);
 
 		/* Patch Tone 2 */
-		patch = lib->patch[i].tone2;
+		patch = newpatch + (lib->patch[i].tone2 - lib->patch[i].patch);
 		do_conversion(2, lib->model, dest, patch);
 
 		/* Patch Tone 3 */
-		patch = lib->patch[i].tone3;
+		patch = newpatch + (lib->patch[i].tone3 - lib->patch[i].patch);
 		do_conversion(3, lib->model, dest, patch);
 
 		/* Patch Tone 4 */
-		patch = lib->patch[i].tone4;
+		patch = newpatch + (lib->patch[i].tone4 - lib->patch[i].patch);
 		do_conversion(4, lib->model, dest, patch);
 
-		write_patch(fd, &lib->patch[i]);
+		/* write raw data */
+		write(fd, newpatch, lib->patch[i].size);
+		write32_be(fd, 0);	/* FIXME: comment field */
 	}
 
 	printf("\nCreate new library: %s\n", output);
@@ -179,38 +184,3 @@ int convert_patches(struct fsex_libdata *lib, int dest, char *output, int force)
 
 	return 0;
 }
-
-#if 0
-int extract_patch(struct fsex_libdata *lib, int num, char *output, int force)
-{
-	int i, j, fd, count;
-	uint8 *p;
-
-	fd = create_libfile(lib, output, force);
-	if (fd < 0) {
-		return fd;
-	}
-
-	count = 0;
-	for (j = 0; j < num; j++) {
-		printf("\nExtract patch from %s:\n", lib[j].filename);
-		for (i = 0; i < lib[j].num_patch; i++) {
-			if (lib[j].patch[i].skip)
-				continue;
-
-			write_patch(fd, &lib[j].patch[i]);
-			p = lib[j].patch[i].common;
-			printf("%04d  %s  %-12.12s\n", i + 1,
-				patch_category[p[PATCH_CATEGORY]].short_name,
-				&p[PATCH_NAME_1]);
-			count++;
-		}
-	}
-
-	printf("\nCreate new library: %s\n", output);
-
-	close_libfile(fd, count);
-
-	return 0;
-}
-#endif
