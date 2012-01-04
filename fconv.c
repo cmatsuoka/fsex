@@ -118,5 +118,9 @@ int main(int argc, char **argv)
 		err = 1;
 	}
 
+	for (i = 0; i < num_in; i++)
+		free(lib_in[i].patch);
+	free(lib_in);
+
 	return err;
 }
